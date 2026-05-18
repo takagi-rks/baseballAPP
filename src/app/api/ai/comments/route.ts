@@ -1,16 +1,9 @@
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-});
+import pool, { initDb } from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
+    await initDb();
     const { searchParams } = new URL(request.url);
     const gameId = searchParams.get('game_id');
 
@@ -18,11 +11,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: false, error: "game_id required" }, { status: 400 });
     }
 
-    // 全選手を取得
     const playersResult = await pool.query('SELECT id, name FROM players WHERE is_active = true;');
     const players = playersResult.rows;
 
-    // 統計を取得
     const statsQuery = `
       SELECT
           player_id,
@@ -31,15 +22,12 @@ export async function GET(request: Request) {
           SUM(CASE WHEN is_hit THEN 1 ELSE 0 END)::int as h,
           SUM(rbi)::int as rbi,
           SUM(runs)::int as runs,
-          -- 打率
           CASE WHEN SUM(CASE WHEN is_at_bat THEN 1 ELSE 0 END) > 0 
                THEN ROUND(SUM(CASE WHEN is_hit THEN 1 ELSE 0 END)::numeric / SUM(CASE WHEN is_at_bat THEN 1 ELSE 0 END), 3)
                ELSE 0 END as avg,
-          -- 出塁率
           CASE WHEN COUNT(*) > 0
                THEN ROUND((SUM(CASE WHEN is_hit THEN 1 ELSE 0 END) + SUM(CASE WHEN result_category = 'WALK' THEN 1 ELSE 0 END))::numeric / COUNT(*), 3)
                ELSE 0 END as obp,
-          -- 長打率
           CASE WHEN SUM(CASE WHEN is_at_bat THEN 1 ELSE 0 END) > 0
                THEN ROUND(SUM(slugging_value)::numeric / SUM(CASE WHEN is_at_bat THEN 1 ELSE 0 END), 3)
                ELSE 0 END as slg

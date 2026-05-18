@@ -1,32 +1,9 @@
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-});
-
-async function initTable() {
-  const query = `
-    CREATE TABLE IF NOT EXISTS players (
-      id SERIAL PRIMARY KEY,
-      name VARCHAR(100) NOT NULL,
-      uniform_number INT,
-      position VARCHAR(50),
-      batting_order INT,
-      is_active BOOLEAN DEFAULT true,
-      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-    );
-  `;
-  await pool.query(query);
-}
+import pool, { initDb } from '@/lib/db';
 
 export async function GET() {
   try {
-    await initTable();
+    await initDb();
     const result = await pool.query('SELECT * FROM players WHERE is_active = true ORDER BY batting_order ASC;');
     return NextResponse.json({ success: true, players: result.rows });
   } catch (error: any) {

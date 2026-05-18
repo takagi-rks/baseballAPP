@@ -1,13 +1,5 @@
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-});
+import pool from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
@@ -15,7 +7,7 @@ export async function GET(request: Request) {
     const gameId = searchParams.get('game_id');
 
     if (!gameId) {
-      return NextResponse.json({ success: true, scores: [] });
+      return NextResponse.json({ success: false, error: "game_id required" }, { status: 400 });
     }
 
     const query = `

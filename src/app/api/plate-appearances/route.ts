@@ -1,17 +1,9 @@
 import { NextResponse } from 'next/server';
-import { Pool } from 'pg';
-
-// 環境変数からPostgreSQLへの接続情報を取得してプールを作成
-const pool = new Pool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-});
+import pool, { initDb } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
+    await initDb();
     const body = await request.json();
     const {
       game_id,
@@ -25,14 +17,8 @@ export async function POST(request: Request) {
       slugging_value
     } = body;
 
-    // TODO: 実際のアプリではログイン中のユーザーや選択中のチームなどから動的に取得します
     const team_id = 1;
-    
-    // 集計用のフラグをカテゴリから自動判定
-    // 安打かどうか
     const isHit = result_category === 'HIT';
-    
-    // 打数にカウントするか（四球、死球、犠飛、犠打 は打数に含めない）
     const isAtBat = !['WALK', 'SACRIFICE'].includes(result_category) && result_detail !== 'HIT_BY_PITCH';
 
     const query = `
@@ -52,7 +38,6 @@ export async function POST(request: Request) {
     ];
 
     const result = await pool.query(query, values);
-
     return NextResponse.json({ success: true, id: result.rows[0].id }, { status: 201 });
   } catch (error: any) {
     console.error("DB Insert Error:", error);
