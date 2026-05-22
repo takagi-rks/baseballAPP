@@ -35,6 +35,7 @@ export default function QuickScoreInput() {
   const [recentHistory, setRecentHistory] = useState<PlateAppearance[]>([]);
   const [playerStats, setPlayerStats] = useState<PlayerStat[]>([]);
   const [scoreboard, setScoreboard] = useState<{ inning: number, runs: number }[]>([]);
+  const [opponentScoreboard, setOpponentScoreboard] = useState<{ inning: number, runs: number }[]>([]);
   const [gamesList, setGamesList] = useState<Game[]>([]);
   const [aiComments, setAiComments] = useState<AIComment[]>([]);
 
@@ -121,7 +122,10 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch(`/api/scoreboard?game_id=${gid}`);
       const data = await resp.json();
-      if (data.success) setScoreboard(data.scores || []);
+      if (data.success) {
+        setScoreboard(data.scores.us || []);
+        setOpponentScoreboard(data.scores.them || []);
+      }
     } catch (e) { setError("Failed to fetch scoreboard"); }
   };
 
@@ -489,7 +493,7 @@ export default function QuickScoreInput() {
             <div className="text-right">
               <span className="text-[8px] block text-gray-600 font-black tracking-widest uppercase">SCORE</span>
               <span className="text-xl font-mono font-black italic text-gray-200">
-                {scoreboard.reduce((acc, curr) => acc + curr.runs, 0)} - {gameDetails.score_them || 0}
+                {(Array.isArray(scoreboard) ? scoreboard.reduce((acc, curr) => acc + curr.runs, 0) : 0)} - {(Array.isArray(opponentScoreboard) ? opponentScoreboard.reduce((acc, curr) => acc + curr.runs, 0) : 0)}
               </span>
             </div>
             <span className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest border ${

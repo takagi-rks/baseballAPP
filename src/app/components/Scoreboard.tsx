@@ -5,7 +5,7 @@ interface ScoreboardProps {
 }
 
 export const Scoreboard: React.FC<ScoreboardProps> = ({ scores }) => {
-  const total = scores.reduce((acc, curr) => acc + curr.runs, 0);
+  const total = Array.isArray(scores) ? scores.reduce((acc, curr) => acc + curr.runs, 0) : 0;
   
   return (
     <div className="bg-black/40 border border-gray-700/50 rounded-xl overflow-hidden mb-6 shadow-2xl">
