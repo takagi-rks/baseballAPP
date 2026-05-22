@@ -45,6 +45,15 @@ export async function initDb() {
       is_hit BOOLEAN DEFAULT false,
       slugging_value INT DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );`,
+    `CREATE TABLE IF NOT EXISTS inning_scores (
+      id SERIAL PRIMARY KEY,
+      game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+      inning INTEGER NOT NULL,
+      team_side VARCHAR(10) NOT NULL,
+      runs INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(game_id, inning, team_side)
     );`
   ];
 
