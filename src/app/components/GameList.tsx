@@ -56,7 +56,7 @@ export const GameList: React.FC<GameListProps> = ({
             </div>
             <div className="flex items-center space-x-4 text-[10px] text-gray-500 font-bold">
               <span className="flex items-center">
-                📅 {new Date(game.game_date).toLocaleDateString()}
+                📅 {game.game_date ? new Date(game.game_date).toLocaleDateString() : '日付不明'}
               </span>
               <span className="flex items-center">
                 🏟️ {game.location || '場所不明'}

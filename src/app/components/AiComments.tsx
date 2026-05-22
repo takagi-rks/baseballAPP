@@ -1,8 +1,8 @@
 import React from 'react';
-import { AIComment } from '../types';
+import type { AiComment } from '../types';
 
 interface AiCommentsProps {
-  comments: AIComment[];
+  comments: AiComment[];
 }
 
 export const AiComments: React.FC<AiCommentsProps> = ({ comments }) => {

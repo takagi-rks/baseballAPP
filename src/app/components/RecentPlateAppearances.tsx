@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player, PlateAppearance } from '../types';
+import type { Player, PlateAppearance } from '../types';
 
 interface RecentPlateAppearancesProps {
   recentHistory: PlateAppearance[];

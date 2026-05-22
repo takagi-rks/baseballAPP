@@ -3,6 +3,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Player, Game, PlateAppearance, PlayerStat, AIComment } from './types';
 import { RESULT_OPTIONS } from './constants';
+import { normalizeResponse } from './lib/normalize';
+import type {
+  ScoreboardResponse,
+  TimelineResponse,
+  StatsResponse,
+  CommentsResponse,
+  GamesResponse,
+  PlayersResponse,
+  Score,
+  InningTimelineGroup,
+} from '@/types';
 
 import { Scoreboard } from './components/Scoreboard';
 import { GameInfoForm } from './components/GameInfoForm';
@@ -68,81 +79,118 @@ export default function QuickScoreInput() {
   const fetchGamesList = async () => {
     try {
       const resp = await fetch('/api/games');
-      const data = await resp.json();
-      if (data.success) setGamesList(data.games || []);
-    } catch (e) { setError("Failed to fetch games"); }
+      const json = (await resp.json()) as GamesResponse;
+      if (!json.success) throw new Error(json.error || 'Failed');
+      const games = normalizeResponse<Game>(json, ['data', 'games']);
+      setGamesList(games);
+    } catch (e) {
+      setError('ゲーム一覧の取得に失敗しました');
+      setGamesList([]);
+    }
   };
 
   const fetchPlayers = useCallback(async () => {
     try {
       const resp = await fetch('/api/players');
-      const data = await resp.json();
-      if (data.success) {
-        setPlayers(data.players || []);
-        if (data.players.length > 0 && !selectedPlayer) {
-          setSelectedPlayer(String(data.players[0].id));
-          setBattingOrder(data.players[0].batting_order);
-        }
+      const json = (await resp.json()) as PlayersResponse;
+      if (!json.success) throw new Error(json.error || 'Failed');
+      const players = normalizeResponse<Player>(json, ['data', 'players']);
+      setPlayers(players);
+      if (players.length > 0 && !selectedPlayer) {
+        setSelectedPlayer(String(players[0].id));
+        setBattingOrder(players[0].batting_order);
       }
-    } catch (e) { setError("Failed to fetch players"); }
+    } catch (e) {
+      setError('選手一覧の取得に失敗しました');
+      setPlayers([]);
+    }
   }, [selectedPlayer]);
 
   const fetchGameDetails = async (gid: number) => {
     try {
       const resp = await fetch(`/api/games/${gid}`);
-      const data = await resp.json();
-      if (data.success) {
-        setGameDetails(data.game);
-        setEditOpponent(data.game.opponent || "練習試合");
-        setEditLocation(data.game.location || "");
-        setEditScoreThem(data.game.score_them || 0);
-        setEditMemo(data.game.memo || "");
-        setEditStatus(data.game.status || "in_progress");
-      }
-    } catch (e) { setError("Failed to fetch game details"); }
+      const json = await resp.json();
+      // Some APIs return the game directly without wrapper
+      const game: Game = json.success ? json.game : json;
+      if (!game) throw new Error('Invalid game data');
+      setGameDetails(game);
+      setEditOpponent(game.opponent || "練習試合");
+      setEditLocation(game.location || "");
+      setEditScoreThem((game as any).score_them || 0);
+      setEditMemo(game.memo || "");
+      setEditStatus(game.status || "in_progress");
+    } catch (e) {
+      setError('試合情報の取得に失敗しました');
+      setGameDetails(null);
+    }
   };
 
   const fetchRecentHistory = async (gid: number) => {
     try {
       const resp = await fetch(`/api/plate-appearances/recent?game_id=${gid}`);
-      const data = await resp.json();
-      if (data.success) setRecentHistory(data.history || []);
-    } catch (e) { setError("Failed to fetch history"); }
+      const json = await resp.json();
+      const history = normalizeResponse<any>(json, ['data', 'history']);
+      setRecentHistory(history);
+    } catch (e) {
+      setError('直近履歴の取得に失敗しました');
+      setRecentHistory([]);
+    }
   };
 
   const fetchPlayerStats = async (gid: number) => {
     try {
       const resp = await fetch(`/api/stats/players?game_id=${gid}`);
-      const data = await resp.json();
-      if (data.success) setPlayerStats(data.stats || []);
-    } catch (e) { setError("Failed to fetch stats"); }
+      const json = (await resp.json()) as StatsResponse;
+      if (!json.success) throw new Error(json.error || 'Failed');
+      const stats = normalizeResponse<PlayerStat>(json, ['data', 'stats']);
+      setPlayerStats(stats);
+    } catch (e) {
+      setError('選手成績の取得に失敗しました');
+      setPlayerStats([]);
+    }
   };
 
   const fetchScoreboard = async (gid: number) => {
     try {
       const resp = await fetch(`/api/scoreboard?game_id=${gid}`);
-      const data = await resp.json();
-      if (data.success) {
-        setScoreboard(data.scores.us || []);
-        setOpponentScoreboard(data.scores.them || []);
-      }
-    } catch (e) { setError("Failed to fetch scoreboard"); }
+      const json = (await resp.json()) as ScoreboardResponse;
+      if (!json.success) throw new Error(json.error || 'Failed');
+      // Handle both possible shapes
+      const us = normalizeResponse<Score>(json, ['data', 'us']) || normalizeResponse<Score>(json, ['scores', 'us']);
+      const them = normalizeResponse<Score>(json, ['data', 'them']) || normalizeResponse<Score>(json, ['scores', 'them']);
+      setScoreboard(us);
+      setOpponentScoreboard(them);
+    } catch (e) {
+      setError('スコアボードの取得に失敗しました');
+      setScoreboard([]);
+      setOpponentScoreboard([]);
+    }
   };
 
   const fetchAIComments = async (gid: number) => {
     try {
       const resp = await fetch(`/api/ai/comments?game_id=${gid}`);
-      const data = await resp.json();
-      if (data.success) setAiComments(data.comments || []);
-    } catch (e) { setError("Failed to fetch comments"); }
+      const json = (await resp.json()) as CommentsResponse;
+      if (!json.success) throw new Error(json.error || 'Failed');
+      const comments = normalizeResponse<AiComment>(json, ['data', 'comments']);
+      setAiComments(comments);
+    } catch (e) {
+      setError('AIコメントの取得に失敗しました');
+      setAiComments([]);
+    }
   };
 
   const fetchTimeline = async (gid: number) => {
     try {
       const resp = await fetch(`/api/game/timeline?game_id=${gid}`);
-      const data = await resp.json();
-      if (data.success) setTimelineData(data.timeline || []);
-    } catch (e) { setError("Failed to fetch timeline"); }
+      const json = (await resp.json()) as TimelineResponse;
+      if (!json.success) throw new Error(json.error || 'Failed');
+      const timeline = normalizeResponse<InningTimelineGroup>(json, ['data', 'timeline']) || normalizeResponse<InningTimelineGroup>(json, ['timeline']);
+      setTimelineData(timeline);
+    } catch (e) {
+      setError('試合経過の取得に失敗しました');
+      setTimelineData([]);
+    }
   };
 
   const createGame = async () => {
