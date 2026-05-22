@@ -4,17 +4,19 @@ import { Player, PlateAppearance } from '../types';
 interface RecentPlateAppearancesProps {
   recentHistory: PlateAppearance[];
   players: Player[];
+  title?: string;
 }
 
 export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
   recentHistory,
-  players
+  players,
+  title
 }) => {
   return (
     <div className="mt-12 bg-gray-800/30 rounded-3xl p-5 border border-gray-700/50 shadow-2xl">
       <h2 className="text-gray-400 text-[10px] font-bold mb-5 uppercase tracking-[0.2em] flex items-center">
         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
-        直近の入力履歴
+        {title || "直近の入力履歴"}
       </h2>
       <div className="space-y-3">
         {recentHistory.length === 0 ? (
