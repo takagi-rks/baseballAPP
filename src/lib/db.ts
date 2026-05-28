@@ -1,14 +1,26 @@
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: true }
+    : false,
 });
 
 export default pool;
 
-// 全テーブルの初期化（Supabase用）
+let initialized = false;
+
 export async function initDb() {
+  if (initialized) return;
+
+  // 変更理由: ビルド時ではなく実行時にチェック
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not set');
+  }
+
+  initialized = true;
+
   const queries = [
     `CREATE TABLE IF NOT EXISTS games (
       id SERIAL PRIMARY KEY,
@@ -54,7 +66,7 @@ export async function initDb() {
       runs INTEGER NOT NULL DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(game_id, inning, team_side)
-    );`
+    );`,
   ];
 
   for (const query of queries) {
