@@ -1,18 +1,18 @@
 export interface ApiSuccess<T> {
   success: true;
-  data?: T; // Some APIs use "data", others use custom keys
-  [key: string]: unknown; // allow extra keys like "scores"
+  data?: T;
+  [key: string]: unknown;
 }
 export interface ApiError {
   success: false;
   error: string;
 }
 
-// Domain models
 export interface Score {
   inning: number;
   runs: number;
 }
+
 export interface TimelineEvent {
   id: number;
   player_id: number;
@@ -31,8 +31,10 @@ export type PlateAppearance = TimelineEvent;
 
 export interface InningTimelineGroup {
   inning: number;
+  inning_half: 'TOP' | 'BOTTOM'; // 変更: 表裏表示のために追加
   events: TimelineEvent[];
 }
+
 export interface Player {
   id: number;
   name: string;
@@ -40,6 +42,7 @@ export interface Player {
   position: string;
   batting_order: number;
 }
+
 export interface Game {
   id: number;
   opponent: string;
@@ -48,23 +51,22 @@ export interface Game {
   score_them: number;
   status: 'in_progress' | 'completed';
   memo?: string;
-  game_date?: string; // optional date field from API
+  game_date?: string;
 }
+
 export interface PlayerStat {
   player_id: number;
-  // add other stats fields as needed
-  [key: string]: any;
-}
-export interface AiComment {
-  id: number;
-  content: string;
-  // other fields as needed
   [key: string]: any;
 }
 
-// Specific endpoint response shapes
+export interface AiComment {
+  id: number;
+  content: string;
+  [key: string]: any;
+}
+
 export type ScoreboardResponse = ApiSuccess<{ scores?: { us?: Score[]; them?: Score[] }; us?: Score[]; them?: Score[] }>;
-export type TimelineResponse = ApiSuccess<{ timeline?: InningTimelineGroup[] }>; // may be under "data" or direct
+export type TimelineResponse = ApiSuccess<{ timeline?: InningTimelineGroup[] }>;
 export type StatsResponse = ApiSuccess<{ stats?: PlayerStat[] }>;
 export type CommentsResponse = ApiSuccess<{ comments?: AiComment[] }>;
 export type GamesResponse = ApiSuccess<{ games?: Game[] }>;

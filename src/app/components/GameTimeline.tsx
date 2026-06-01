@@ -26,6 +26,11 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
     return detail.replace('_', ' ');
   };
 
+  // 変更理由: 表裏ラベルを日本語で表示
+  const getInningLabel = (inning: number, inning_half: 'TOP' | 'BOTTOM') => {
+    return `${inning}回${inning_half === 'TOP' ? '表' : '裏'}`;
+  };
+
   return (
     <div className="mt-8 bg-gray-950/40 rounded-3xl p-5 border border-gray-900/50 shadow-2xl">
       <h2 className="text-gray-400 text-[10px] font-bold mb-6 uppercase tracking-[0.2em] flex items-center">
@@ -40,9 +45,9 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
       ) : (
         <div className="relative border-l border-gray-900 ml-3 pl-6 space-y-8">
           {timeline.map((group) => (
-            <div key={group.inning} className="relative">
-              <div className="absolute -left-[35px] top-0 bg-gray-900 border border-gray-800 rounded-lg px-2 py-0.5 text-[9px] font-black text-gray-400 shadow-md">
-                {group.inning}回
+            <div key={`${group.inning}-${group.inning_half}`} className="relative">
+              <div className="absolute -left-[42px] top-0 bg-gray-900 border border-gray-800 rounded-lg px-2 py-0.5 text-[9px] font-black text-gray-400 shadow-md whitespace-nowrap">
+                {getInningLabel(group.inning, group.inning_half ?? 'TOP')}
               </div>
 
               <div className="space-y-4 pt-1">

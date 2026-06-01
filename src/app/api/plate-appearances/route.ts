@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
     game_id,
     player_id,
     inning,
+    inning_half,
     result_category,
     result_detail,
     rbi,
@@ -42,24 +43,40 @@ export async function POST(request: NextRequest) {
     const slugging_value = calcSluggingValue(result_detail);
     const TEAM_ID_PLACEHOLDER = 1;
 
-    const query = `
+    // 打席登録
+    const paQuery = `
       INSERT INTO plate_appearances (
-        team_id, game_id, player_id, inning,
+        team_id, game_id, player_id, inning, inning_half,
         result_category, result_detail, rbi, runs, stolen_bases,
         is_at_bat, is_hit, slugging_value
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
       RETURNING id;
     `;
-    const values = [
+    const paValues = [
       TEAM_ID_PLACEHOLDER, game_id, player_id, inning,
+      inning_half ?? 'TOP',
       result_category, result_detail,
       rbi ?? 0, runs ?? 0, stolen_bases ?? 0,
       isAtBat, isHit, slugging_value,
     ];
+    const paResult = await pool.query(paQuery, paValues);
 
-    const result = await pool.query(query, values);
-    return NextResponse.json({ success: true, id: result.rows[0].id }, { status: 201 });
+    // 変更理由: 自チーム得点を inning_scores に upsert
+    if ((runs ?? 0) > 0) {
+      const upsertQuery = `
+        INSERT INTO inning_scores (game_id, inning, team_side, runs)
+        VALUES ($1, $2, 'us', $3)
+        ON CONFLICT (game_id, inning, team_side)
+        DO UPDATE SET runs = inning_scores.runs + EXCLUDED.runs;
+      `;
+      await pool.query(upsertQuery, [game_id, inning, runs]);
+    }
+
+    return NextResponse.json(
+      { success: true, id: paResult.rows[0].id },
+      { status: 201 }
+    );
 
   } catch (error) {
     console.error('DB Insert Error:', error);
