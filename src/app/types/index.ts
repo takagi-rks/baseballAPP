@@ -15,13 +15,16 @@ export interface Score {
 }
 export interface TimelineEvent {
   id: number;
+  player_id: number;
+  inning: number;
+  inning_half: 'TOP' | 'BOTTOM';
   result_category: string;
   result_detail: string;
   rbi: number;
   runs: number;
   created_at: string;
   player_name: string;
-  uniform_number: number;
+  uniform_number: number | string;
 }
 
 export type PlateAppearance = TimelineEvent;
