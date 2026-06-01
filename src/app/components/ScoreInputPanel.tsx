@@ -28,7 +28,12 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
   onResultTap, onUndo, lastInsertedId,
   isProcessing, resultOptions
 }) => {
-  const currentPlayer = players.find(p => p.id === parseInt(selectedPlayer)) || players[0];
+  const safePlayers = Array.isArray(players) ? players : [];
+  const currentIndex = safePlayers.findIndex(p => p.id === parseInt(selectedPlayer));
+  const currentPlayer = currentIndex >= 0 ? safePlayers[currentIndex] : safePlayers[0];
+  const nextPlayer = safePlayers.length > 0
+    ? safePlayers[(currentIndex >= 0 ? currentIndex + 1 : 1) % safePlayers.length]
+    : null;
 
   return (
     <div className="space-y-4">
@@ -58,10 +63,16 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
         </div>
 
         <div className="text-right">
-          <span className="text-2xl font-black text-blue-400 italic mr-2">{battingOrder}<span className="text-xs not-italic font-normal ml-0.5">番</span></span>
-          <span className="text-lg font-bold">
-            {currentPlayer ? `#${currentPlayer.uniform_number} ${currentPlayer.name}` : "選手なし"}
-          </span>
+          <div className="text-[10px] text-blue-300 font-black uppercase tracking-wider mb-1">現在打者</div>
+          <div>
+            <span className="text-2xl font-black text-blue-400 italic mr-2">{currentPlayer?.batting_order ?? battingOrder}<span className="text-xs not-italic font-normal ml-0.5">番</span></span>
+            <span className="text-lg font-bold">
+              {currentPlayer ? `#${currentPlayer.uniform_number} ${currentPlayer.name}` : "選手なし"}
+            </span>
+          </div>
+          <div className="text-[10px] text-gray-400 mt-1">
+            次: {nextPlayer ? `${nextPlayer.batting_order}番 #${nextPlayer.uniform_number} ${nextPlayer.name}` : "なし"}
+          </div>
         </div>
       </div>
 
