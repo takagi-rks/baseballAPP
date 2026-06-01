@@ -23,6 +23,9 @@ export interface TimelineEvent {
   player_name: string;
   uniform_number: number;
 }
+
+export type PlateAppearance = TimelineEvent;
+
 export interface InningTimelineGroup {
   inning: number;
   events: TimelineEvent[];

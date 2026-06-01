@@ -30,7 +30,7 @@ export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
               <div key={item.id} className="bg-gray-900/60 border border-gray-700/30 rounded-2xl p-4 flex items-center justify-between shadow-lg transition-transform active:scale-[0.98]">
                 <div className="flex flex-col">
                   <div className="flex items-center space-x-2 mb-1">
-                    <span className="text-[10px] text-blue-400 font-black uppercase">{item.inning}回裏</span>
+                    <span className="text-[10px] text-blue-400 font-black uppercase">{item.inning}回{item.inning_half === 'BOTTOM' ? '裏' : '表'}</span>
                     <span className="text-[10px] text-gray-600">•</span>
                     <span className="text-[10px] text-gray-500 font-medium">
                       {new Date(item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
