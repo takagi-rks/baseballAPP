@@ -254,6 +254,7 @@ export default function QuickScoreInput() {
       rbi,
       runs,
       stolen_bases: 0,
+      inning_half: inningHalf,
       slugging_value: option.slugging
     };
 
@@ -280,30 +281,49 @@ export default function QuickScoreInput() {
         let nextInningHalf = inningHalf;
         let nextInning = inning;
 
-        if (option.category === 'OUT') {
-          if (outs >= 2) {
+        const addOut = (count: number = 1) => {
+          nextOuts += count;
+          if (nextOuts >= 3) {
             nextOuts = 0;
             nextBases = { 1: false, 2: false, 3: false };
-            if (inningHalf === 'BOTTOM') {
-              nextInning = (inning + 1);
+            if (nextInningHalf === 'BOTTOM') {
+              nextInning += 1;
               nextInningHalf = 'TOP';
             } else {
               nextInningHalf = 'BOTTOM';
             }
-          } else {
-            nextOuts = (outs + 1);
           }
-        } else if (option.category === 'HIT' || option.category === 'WALK') {
-          if (option.detail === 'SINGLE') {
-            nextBases[1] = true;
-          } else if (option.detail === 'DOUBLE') {
-            nextBases[2] = true;
-          } else if (option.detail === 'TRIPLE') {
-            nextBases[3] = true;
-          } else if (option.detail === 'HOME_RUN') {
-            nextBases = { 1: false, 2: false, 3: false };
-          } else if (option.category === 'WALK') {
-            nextBases[1] = true;
+        };
+
+        if (option.category === 'OUT' || option.category === 'SACRIFICE') {
+          addOut(option.detail === 'DOUBLE_PLAY' ? 2 : 1);
+        } else if (option.detail === 'SINGLE') {
+          nextBases = {
+            1: true,
+            2: nextBases[1],
+            3: nextBases[2],
+          };
+        } else if (option.detail === 'DOUBLE') {
+          nextBases = {
+            1: false,
+            2: true,
+            3: nextBases[1] || nextBases[2],
+          };
+        } else if (option.detail === 'TRIPLE') {
+          nextBases = { 1: false, 2: false, 3: true };
+        } else if (option.detail === 'HOME_RUN') {
+          nextBases = { 1: false, 2: false, 3: false };
+        } else if (option.category === 'WALK' || option.detail === 'HIT_BY_PITCH') {
+          // 強制進塁: 一塁が埋まっている場合のみ押し出し
+          if (nextBases[1] && nextBases[2] && nextBases[3]) {
+            // 満塁 → 三塁走者生還
+            nextBases = { 1: true, 2: true, 3: true };
+          } else if (nextBases[1] && nextBases[2]) {
+            nextBases = { 1: true, 2: true, 3: true };
+          } else if (nextBases[1]) {
+            nextBases = { 1: true, 2: true, 3: nextBases[3] };
+          } else {
+            nextBases = { 1: true, 2: nextBases[2], 3: nextBases[3] };
           }
         }
 
