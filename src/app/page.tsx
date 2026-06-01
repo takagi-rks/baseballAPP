@@ -13,7 +13,7 @@ import type {
   PlayersResponse,
   Score,
   InningTimelineGroup,
-} from '@/types';
+} from './types';
 
 import { Scoreboard } from './components/Scoreboard';
 import { GameInfoForm } from './components/GameInfoForm';
