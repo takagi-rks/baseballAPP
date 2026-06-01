@@ -94,7 +94,7 @@ export default function QuickScoreInput() {
       const resp = await fetch('/api/players');
       const json = (await resp.json()) as PlayersResponse;
       if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
-      const players = normalizeResponse<Player>(json, ['data', 'players']);
+      const players = normalizeResponse<Player>(json, ['players']);
       setPlayers(players);
       if (players.length > 0 && !selectedPlayer) {
         setSelectedPlayer(String(players[0].id));
