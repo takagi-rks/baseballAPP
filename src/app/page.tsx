@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Player, Game, PlateAppearance, PlayerStat, AIComment } from './types';
+import { Player, Game, PlateAppearance, PlayerStat, AiComment } from './types';
 import { RESULT_OPTIONS } from './constants';
 import { normalizeResponse } from './lib/normalize';
 import type {
@@ -48,7 +48,7 @@ export default function QuickScoreInput() {
   const [scoreboard, setScoreboard] = useState<{ inning: number, runs: number }[]>([]);
   const [opponentScoreboard, setOpponentScoreboard] = useState<{ inning: number, runs: number }[]>([]);
   const [gamesList, setGamesList] = useState<Game[]>([]);
-  const [aiComments, setAiComments] = useState<AIComment[]>([]);
+  const [aiComments, setAiComments] = useState<AiComment[]>([]);
 
   const [currentGameId, setCurrentGameId] = useState<number | null>(null);
   const [gameDetails, setGameDetails] = useState<Game | null>(null);
