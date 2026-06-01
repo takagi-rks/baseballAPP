@@ -80,7 +80,7 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch('/api/games');
       const json = (await resp.json()) as GamesResponse;
-      if (!json.success) throw new Error(json.error || 'Failed');
+      if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       const games = normalizeResponse<Game>(json, ['data', 'games']);
       setGamesList(games);
     } catch (e) {
@@ -93,7 +93,7 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch('/api/players');
       const json = (await resp.json()) as PlayersResponse;
-      if (!json.success) throw new Error(json.error || 'Failed');
+      if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       const players = normalizeResponse<Player>(json, ['data', 'players']);
       setPlayers(players);
       if (players.length > 0 && !selectedPlayer) {
@@ -141,7 +141,7 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch(`/api/stats/players?game_id=${gid}`);
       const json = (await resp.json()) as StatsResponse;
-      if (!json.success) throw new Error(json.error || 'Failed');
+      if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       const stats = normalizeResponse<PlayerStat>(json, ['data', 'stats']);
       setPlayerStats(stats);
     } catch (e) {
@@ -154,7 +154,7 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch(`/api/scoreboard?game_id=${gid}`);
       const json = (await resp.json()) as ScoreboardResponse;
-      if (!json.success) throw new Error(json.error || 'Failed');
+      if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       // Handle both possible shapes
       const us = normalizeResponse<Score>(json, ['data', 'us']) || normalizeResponse<Score>(json, ['scores', 'us']);
       const them = normalizeResponse<Score>(json, ['data', 'them']) || normalizeResponse<Score>(json, ['scores', 'them']);
@@ -171,7 +171,7 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch(`/api/ai/comments?game_id=${gid}`);
       const json = (await resp.json()) as CommentsResponse;
-      if (!json.success) throw new Error(json.error || 'Failed');
+      if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       const comments = normalizeResponse<AiComment>(json, ['data', 'comments']);
       setAiComments(comments);
     } catch (e) {
@@ -184,7 +184,7 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch(`/api/game/timeline?game_id=${gid}`);
       const json = (await resp.json()) as TimelineResponse;
-      if (!json.success) throw new Error(json.error || 'Failed');
+      if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       const timeline = normalizeResponse<InningTimelineGroup>(json, ['data', 'timeline']) || normalizeResponse<InningTimelineGroup>(json, ['timeline']);
       setTimelineData(timeline);
     } catch (e) {
