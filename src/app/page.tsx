@@ -23,7 +23,7 @@ import { AiComments } from './components/AiComments';
 import { RecentPlateAppearances } from './components/RecentPlateAppearances';
 import { GameList } from './components/GameList';
 import { PlayerManager } from './components/PlayerManager';
-import { GameTimeline, InningTimelineGroup } from './components/GameTimeline';
+import { GameTimeline } from './components/GameTimeline';
 
 export default function QuickScoreInput() {
   // --- States ---
