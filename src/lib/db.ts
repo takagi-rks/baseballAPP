@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: true }
+    ? { rejectUnauthorized: false }
     : false,
 });
 
@@ -14,7 +14,6 @@ let initialized = false;
 export async function initDb() {
   if (initialized) return;
 
-  // 変更理由: ビルド時ではなく実行時にチェック
   if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set');
   }
