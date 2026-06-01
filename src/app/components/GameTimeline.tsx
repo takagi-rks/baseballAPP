@@ -1,20 +1,5 @@
 import React from 'react';
-
-export interface TimelineEvent {
-  id: number;
-  result_category: string;
-  result_detail: string;
-  rbi: number;
-  runs: number;
-  created_at: string;
-  player_name: string;
-  uniform_number: number;
-}
-
-export interface InningTimelineGroup {
-  inning: number;
-  events: TimelineEvent[];
-}
+import type { InningTimelineGroup } from '../types';
 
 interface GameTimelineProps {
   timeline: InningTimelineGroup[];
@@ -56,7 +41,6 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
         <div className="relative border-l border-gray-900 ml-3 pl-6 space-y-8">
           {timeline.map((group) => (
             <div key={group.inning} className="relative">
-              {/* Inning Marker */}
               <div className="absolute -left-[35px] top-0 bg-gray-900 border border-gray-800 rounded-lg px-2 py-0.5 text-[9px] font-black text-gray-400 shadow-md">
                 {group.inning}回
               </div>
@@ -77,7 +61,6 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
                           : 'border-gray-800/60 hover:border-gray-700/80'
                       }`}
                     >
-                      {/* Timeline dot */}
                       <div className={`absolute -left-[29px] top-1/2 -translate-y-1/2 w-2 h-2 rounded-full border ${
                         isHomeRun ? 'bg-amber-400 border-amber-500/40' :
                         event.result_category === 'HIT' ? 'bg-blue-400 border-blue-500/40' :
@@ -87,7 +70,6 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
 
                       <div className="flex justify-between items-center">
                         <div className="flex flex-col">
-                          {/* Time / Batter Info */}
                           <div className="flex items-center space-x-2 mb-1.5">
                             <span className="text-[10px] text-gray-500 font-bold">
                               {new Date(event.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -99,13 +81,11 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
                           </span>
                         </div>
 
-                        {/* Result Badge */}
                         <div className="flex flex-col items-end space-y-1.5">
                           <span className={`text-[9px] font-bold px-2.5 py-1 rounded-xl uppercase tracking-wider border ${getBadgeStyle(event.result_category, event.result_detail)}`}>
                             {getResultLabel(event.result_detail)}
                           </span>
 
-                          {/* Runs/RBI highlight */}
                           {hasPoints && (
                             <div className="flex space-x-1">
                               {event.rbi > 0 && (
