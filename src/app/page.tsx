@@ -116,7 +116,6 @@ export default function QuickScoreInput() {
       setGameDetails(game);
       setEditOpponent(game.opponent || "練習試合");
       setEditLocation(game.location || "");
-      setEditScoreThem((game as any).score_them || 0);
       setEditMemo(game.memo || "");
       setEditStatus(game.status || "in_progress");
     } catch (e) {
@@ -381,9 +380,9 @@ export default function QuickScoreInput() {
         body: JSON.stringify({
           opponent: editOpponent,
           location: editLocation,
-          score_them: editScoreThem,
           memo: editMemo,
-          status: editStatus
+          status: editStatus,
+          batting_side: gameDetails?.batting_side || 'TOP'
         }),
       });
       if (response.ok) {

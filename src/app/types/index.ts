@@ -50,6 +50,7 @@ export interface Game {
   score_us: number;
   score_them: number;
   status: 'in_progress' | 'completed';
+  batting_side: 'TOP' | 'BOTTOM';
   memo?: string;
   game_date?: string;
 }
