@@ -79,6 +79,13 @@ export default function QuickScoreInput() {
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [newGameStep, setNewGameStep] = useState<1 | 2 | 3>(1);
 
+  const [opponentRunsInput, setOpponentRunsInput] = useState(0);
+  const [opponentHitsInput, setOpponentHitsInput] = useState(0);
+  const [opponentWalksInput, setOpponentWalksInput] = useState(0);
+  const [opponentHbpInput, setOpponentHbpInput] = useState(0);
+  const [opponentErrorsInput, setOpponentErrorsInput] = useState(0);
+  const [opponentNoteInput, setOpponentNoteInput] = useState('');
+
   // --- Fetching Functions ---
 
   const fetchGamesList = async () => {
@@ -526,6 +533,64 @@ export default function QuickScoreInput() {
     }
   };
 
+  const resetOpponentInput = () => {
+    setOpponentRunsInput(0);
+    setOpponentHitsInput(0);
+    setOpponentWalksInput(0);
+    setOpponentHbpInput(0);
+    setOpponentErrorsInput(0);
+    setOpponentNoteInput('');
+  };
+
+  const handleSaveOpponentHalf = async () => {
+    if (!currentGameId || isProcessing) return;
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/inning-scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          game_id: currentGameId,
+          inning,
+          team_side: 'them',
+          runs: opponentRunsInput,
+          hits_allowed: opponentHitsInput,
+          walks_allowed: opponentWalksInput,
+          hit_by_pitch_allowed: opponentHbpInput,
+          errors_committed: opponentErrorsInput,
+          note: opponentNoteInput,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to save opponent inning');
+      }
+
+      if (inningHalf === 'TOP') {
+        setInningHalf('BOTTOM');
+      } else {
+        setInning(inning + 1);
+        setInningHalf('TOP');
+      }
+
+      resetOpponentInput();
+
+      await Promise.all([
+        fetchScoreboard(currentGameId),
+        fetchTimeline(currentGameId),
+        fetchGamesList(),
+      ]);
+    } catch (e) {
+      setError('相手攻撃の記録に失敗しました');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleNewGame = async () => {
     if (!confirm('New game?') || isProcessing) return;
     setIsProcessing(true);
@@ -683,6 +748,9 @@ export default function QuickScoreInput() {
   };
 
   // --- Render ---
+
+  const ourBattingSide = gameDetails?.batting_side || 'TOP';
+  const isOurBatting = inningHalf === ourBattingSide;
 
   if (isInitialLoading) {
     return (
