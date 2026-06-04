@@ -83,7 +83,9 @@ export default function QuickScoreInput() {
       const resp = await fetch('/api/games');
       const json = (await resp.json()) as GamesResponse;
       if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
-      const games = normalizeResponse<Game>(json, ['data', 'games']);
+      const dataGames = normalizeResponse<Game>(json, ['data', 'games']);
+      const rootGames = normalizeResponse<Game>(json, ['games']);
+      const games = dataGames.length > 0 ? dataGames : rootGames;
       setGamesList(games);
     } catch (e) {
       setError('ゲーム一覧の取得に失敗しました');
@@ -838,7 +840,7 @@ export default function QuickScoreInput() {
               </div>
 
               <div className="space-y-2">
-                {Array.from({ length: 9 }, (_, index) => {
+                {Array.from({ length: 11 }, (_, index) => {
                   const order = index + 1;
                   return (
                     <div key={order} className="flex items-center gap-3">
