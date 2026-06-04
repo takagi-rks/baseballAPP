@@ -24,6 +24,7 @@ import { RecentPlateAppearances } from './components/RecentPlateAppearances';
 import { GameList } from './components/GameList';
 import { PlayerManager } from './components/PlayerManager';
 import { GameTimeline } from './components/GameTimeline';
+import { CareerStatsTable } from './components/CareerStatsTable';
 
 export default function QuickScoreInput() {
   // --- States ---
@@ -612,6 +613,8 @@ export default function QuickScoreInput() {
 
         {activeTab === 'stats' && (
           <div className="space-y-6">
+            <CareerStatsTable />
+
             {/* Quick CSV Export Panel */}
             <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-5 flex flex-col items-center justify-between shadow-lg">
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-3">CSVデータエクスポート</span>
