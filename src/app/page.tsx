@@ -155,9 +155,15 @@ export default function QuickScoreInput() {
       const resp = await fetch(`/api/scoreboard?game_id=${gid}&t=${Date.now()}`, { cache: 'no-store' });
       const json = (await resp.json()) as ScoreboardResponse;
       if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
-      // Handle both possible shapes
-      const us = normalizeResponse<Score>(json, ['data', 'us']) || normalizeResponse<Score>(json, ['scores', 'us']);
-      const them = normalizeResponse<Score>(json, ['data', 'them']) || normalizeResponse<Score>(json, ['scores', 'them']);
+      // Handle both possible shapes. normalizeResponse returns [] on failure, and [] is truthy.
+      const dataUs = normalizeResponse<Score>(json, ['data', 'us']);
+      const scoresUs = normalizeResponse<Score>(json, ['scores', 'us']);
+      const dataThem = normalizeResponse<Score>(json, ['data', 'them']);
+      const scoresThem = normalizeResponse<Score>(json, ['scores', 'them']);
+
+      const us = dataUs.length > 0 ? dataUs : scoresUs;
+      const them = dataThem.length > 0 ? dataThem : scoresThem;
+
       setScoreboard(us);
       setOpponentScoreboard(them);
     } catch (e) {
