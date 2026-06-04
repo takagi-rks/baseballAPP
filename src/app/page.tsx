@@ -76,6 +76,8 @@ export default function QuickScoreInput() {
   const [editMemo, setEditMemo] = useState("");
   const [editStatus, setEditStatus] = useState("in_progress");
   const [newGameLineup, setNewGameLineup] = useState<Record<number, string>>({});
+  const [isCreatingGame, setIsCreatingGame] = useState(false);
+  const [newGameStep, setNewGameStep] = useState<1 | 2 | 3>(1);
 
   // --- Fetching Functions ---
 
@@ -587,6 +589,9 @@ export default function QuickScoreInput() {
           fetchTimeline(gid),
           fetchAIComments(gid),
         ]);
+
+        setIsCreatingGame(false);
+        setNewGameStep(1);
       }
     } catch (e) {
       setError("Failed to reset");
@@ -818,63 +823,203 @@ export default function QuickScoreInput() {
 
         {activeTab === 'gameInfo' && (
           <div className="space-y-6">
-            <GameInfoForm 
-              editOpponent={editOpponent} setEditOpponent={setEditOpponent}
-              editLocation={editLocation} setEditLocation={setEditLocation}
-              editScoreThem={editScoreThem} setEditScoreThem={setEditScoreThem}
-              editStatus={editStatus} setEditStatus={setEditStatus}
-              editMemo={editMemo} setEditMemo={setEditMemo}
-              onSave={handleUpdateGameDetails}
-              isProcessing={isProcessing}
-            />
             <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-5 shadow-lg">
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                  <h3 className="text-sm font-black text-gray-100">新規試合の打順設定</h3>
-                  <p className="text-[11px] text-gray-500 mt-1">新規試合開始前に、1番から順に選手を選択してください。</p>
+                  <h2 className="text-sm font-black text-gray-100">新規試合作成</h2>
+                  <p className="text-[11px] text-gray-500 mt-1">
+                    新規作成 → 打順選択 → 試合情報入力 の順で作成します。
+                  </p>
                 </div>
+
+                {!isCreatingGame && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCreatingGame(true);
+                      setNewGameStep(1);
+                    }}
+                    disabled={isProcessing}
+                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-4 py-3 rounded-xl active:scale-[0.98] disabled:opacity-50"
+                  >
+                    新規作成
+                  </button>
+                )}
               </div>
 
-              <div className="space-y-2">
-                {Array.from({ length: 11 }, (_, index) => {
-                  const order = index + 1;
-                  return (
-                    <div key={order} className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-sm font-black text-blue-400">
-                        {order}
-                      </div>
-                      <select
-                        value={newGameLineup[order] || ''}
-                        onChange={(e) => setNewGameLineup((prev) => ({ ...prev, [order]: e.target.value }))}
-                        disabled={isProcessing}
-                        className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+              {isCreatingGame && (
+                <div className="space-y-5">
+                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-black">
+                    {[1, 2, 3].map((step) => (
+                      <div
+                        key={step}
+                        className={`rounded-xl py-2 border ${
+                          newGameStep === step
+                            ? 'bg-blue-500/20 border-blue-500 text-blue-300'
+                            : 'bg-gray-950/40 border-gray-800 text-gray-600'
+                        }`}
                       >
-                        <option value="">選手を選択</option>
-                        {players.map((player) => (
-                          <option key={player.id} value={player.id}>
-                            #{player.uniform_number} {player.name} ({player.position})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  );
-                })}
-              </div>
+                        {step === 1 ? '1 新規作成' : step === 2 ? '2 打順選択' : '3 試合情報'}
+                      </div>
+                    ))}
+                  </div>
 
-              <p className="text-[10px] text-gray-600 mt-3">
-                ※ 未選択の打順は現在の選手設定を維持します。同じ選手を複数選んだ場合、最初の打順だけ反映します。
-              </p>
+                  {newGameStep === 1 && (
+                    <div className="space-y-4">
+                      <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-4">
+                        <h3 className="text-sm font-black text-white mb-2">新しい試合を開始します</h3>
+                        <p className="text-xs text-gray-500 leading-relaxed">
+                          次のステップで打順を選び、その後に対戦相手・球場などを入力します。
+                          既存の試合データは削除されません。
+                        </p>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsCreatingGame(false);
+                            setNewGameStep(1);
+                          }}
+                          disabled={isProcessing}
+                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
+                        >
+                          キャンセル
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewGameStep(2)}
+                          disabled={isProcessing}
+                          className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
+                        >
+                          打順選択へ
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {newGameStep === 2 && (
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-sm font-black text-gray-100">打順選択</h3>
+                        <p className="text-[11px] text-gray-500 mt-1">
+                          1番〜11番まで設定できます。空白の打順はスキップされます。
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        {Array.from({ length: 11 }, (_, index) => {
+                          const order = index + 1;
+                          return (
+                            <div key={order} className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-sm font-black text-blue-400">
+                                {order}
+                              </div>
+                              <select
+                                value={newGameLineup[order] || ''}
+                                onChange={(e) => setNewGameLineup((prev) => ({ ...prev, [order]: e.target.value }))}
+                                disabled={isProcessing}
+                                className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                              >
+                                <option value="">スキップ</option>
+                                {players.map((player) => (
+                                  <option key={player.id} value={player.id}>
+                                    #{player.uniform_number} {player.name} ({player.position})
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setNewGameStep(1)}
+                          disabled={isProcessing}
+                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
+                        >
+                          戻る
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setNewGameStep(3)}
+                          disabled={isProcessing}
+                          className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
+                        >
+                          試合情報へ
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {newGameStep === 3 && (
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-sm font-black text-gray-100">試合情報入力</h3>
+                        <p className="text-[11px] text-gray-500 mt-1">対戦相手・球場などを入力して試合を開始します。</p>
+                      </div>
+
+                      <GameInfoForm
+                        editOpponent={editOpponent} setEditOpponent={setEditOpponent}
+                        editLocation={editLocation} setEditLocation={setEditLocation}
+                        editScoreThem={editScoreThem} setEditScoreThem={setEditScoreThem}
+                        editStatus={editStatus} setEditStatus={setEditStatus}
+                        editMemo={editMemo} setEditMemo={setEditMemo}
+                        onSave={handleUpdateGameDetails}
+                        isProcessing={isProcessing}
+                      />
+
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setNewGameStep(2)}
+                          disabled={isProcessing}
+                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
+                        >
+                          戻る
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleNewGame}
+                          disabled={isProcessing}
+                          className="flex-1 bg-green-600 hover:bg-green-500 text-white text-xs font-black py-3 rounded-xl active:scale-[0.98] disabled:opacity-50"
+                        >
+                          この内容で試合開始
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            <GameList 
+            {!isCreatingGame && (
+              <GameInfoForm
+                editOpponent={editOpponent} setEditOpponent={setEditOpponent}
+                editLocation={editLocation} setEditLocation={setEditLocation}
+                editScoreThem={editScoreThem} setEditScoreThem={setEditScoreThem}
+                editStatus={editStatus} setEditStatus={setEditStatus}
+                editMemo={editMemo} setEditMemo={setEditMemo}
+                onSave={handleUpdateGameDetails}
+                isProcessing={isProcessing}
+              />
+            )}
+
+            <GameList
               games={gamesList}
               currentGameId={currentGameId}
               onSelectGame={setCurrentGameId}
-              onNewGame={handleNewGame}
+              onNewGame={() => {
+                setIsCreatingGame(true);
+                setNewGameStep(1);
+              }}
               isProcessing={isProcessing}
             />
           </div>
         )}
+
       </main>
 
       {/* Bottom Navigation Bar */}
