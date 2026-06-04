@@ -482,6 +482,18 @@ export default function QuickScoreInput() {
     finally { setIsProcessing(false); }
   };
 
+  const validateNewGameLineup = () => {
+    const selectedPlayerIds = Object.values(newGameLineup).filter((playerId) => playerId);
+    const uniquePlayerIds = new Set(selectedPlayerIds);
+
+    if (selectedPlayerIds.length !== uniquePlayerIds.size) {
+      setError('打順内で同じ選手が重複しています。重複しないように選択してください。');
+      return false;
+    }
+
+    return true;
+  };
+
   const saveNewGameLineup = async () => {
     const entries = Object.entries(newGameLineup)
       .map(([order, playerId]) => ({
@@ -922,11 +934,18 @@ export default function QuickScoreInput() {
                                 className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
                               >
                                 <option value="">スキップ</option>
-                                {players.map((player) => (
-                                  <option key={player.id} value={player.id}>
-                                    #{player.uniform_number} {player.name} ({player.position})
-                                  </option>
-                                ))}
+                                {players.map((player) => {
+                                  const selectedElsewhere = Object.entries(newGameLineup).some(
+                                    ([selectedOrder, selectedPlayerId]) =>
+                                      Number(selectedOrder) !== order && String(selectedPlayerId) === String(player.id)
+                                  );
+
+                                  return (
+                                    <option key={player.id} value={player.id} disabled={selectedElsewhere}>
+                                      #{player.uniform_number} {player.name} ({player.position}){selectedElsewhere ? ' - 選択済み' : ''}
+                                    </option>
+                                  );
+                                })}
                               </select>
                             </div>
                           );
@@ -944,7 +963,11 @@ export default function QuickScoreInput() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setNewGameStep(3)}
+                          onClick={() => {
+                            setError(null);
+                            if (!validateNewGameLineup()) return;
+                            setNewGameStep(3);
+                          }}
                           disabled={isProcessing}
                           className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
                         >
