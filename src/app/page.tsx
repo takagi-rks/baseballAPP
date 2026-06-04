@@ -337,38 +337,36 @@ export default function QuickScoreInput() {
         ) {
           addOut(option.detail === 'DOUBLE_PLAY' ? 2 : 1);
         } else if (option.detail === 'SINGLE') {
-          // 三塁走者は生還済み → 塁から除去
+          // 単打: 全走者1つ進塁、三塁走者は生還
           nextBases = {
             1: true,
-            2: nextBases[1] || false,
-            3: nextBases[2] || false,
+            2: Boolean(nextBases[1]),
+            3: Boolean(nextBases[2]),
           };
         } else if (option.detail === 'DOUBLE') {
-          // 二塁・三塁走者は生還済み → 塁から除去
+          // 二塁打: 全走者2つ進塁、二塁・三塁走者は生還
           nextBases = {
             1: false,
             2: true,
-            3: nextBases[1] || false,
+            3: Boolean(nextBases[1]),
           };
         } else if (option.detail === 'TRIPLE') {
-          // 全走者生還
+          // 三塁打: 全走者生還、打者は三塁
           nextBases = { 1: false, 2: false, 3: true };
         } else if (option.detail === 'HOME_RUN') {
+          // 本塁打: 全走者と打者が生還、塁は空
           nextBases = { 1: false, 2: false, 3: false };
         } else if (option.category === 'WALK' || option.detail === 'HIT_BY_PITCH') {
-          if (nextBases[1] && nextBases[2] && nextBases[3]) {
-            // 満塁 → 押し出し(三塁走者生還)・塁はそのまま
-            nextBases = { 1: true, 2: true, 3: true };
-          } else if (nextBases[1] && nextBases[2]) {
-            // 一二塁 → 打者一塁・強制進塁
-            nextBases = { 1: true, 2: true, 3: true };
-          } else if (nextBases[1]) {
-            // 一塁のみ → 打者一塁・一塁走者二塁
-            nextBases = { 1: true, 2: true, 3: nextBases[3] || false };
-          } else {
-            // 一塁空 → 打者一塁のみ
-            nextBases = { 1: true, 2: nextBases[2] || false, 3: nextBases[3] || false };
-          }
+          // 四死球: 強制進塁のみ
+          const wasFirst = Boolean(nextBases[1]);
+          const wasSecond = Boolean(nextBases[2]);
+          const wasThird = Boolean(nextBases[3]);
+
+          nextBases = {
+            1: true,
+            2: wasFirst ? true : wasSecond,
+            3: wasFirst && wasSecond ? true : wasThird,
+          };
         }
 
         setOuts(nextOuts);
