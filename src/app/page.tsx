@@ -201,10 +201,47 @@ export default function QuickScoreInput() {
 
   const createGame = async () => {
     try {
-      const resp = await fetch('/api/games', { method: 'POST' });
+      const resp = await fetch('/api/games', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opponent: editOpponent || '練習試合',
+          status: 'in_progress',
+        }),
+      });
+
       const data = await resp.json();
-      if (data.success) return data.id;
-    } catch (e) { setError("Failed to create game"); }
+
+      if (data.success) {
+        const orderedPlayers = Array.isArray(players)
+          ? [...players].sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999))
+          : [];
+
+        if (orderedPlayers.length > 0) {
+          setSelectedPlayer(String(orderedPlayers[0].id));
+          setBattingOrder(orderedPlayers[0].batting_order || 1);
+        } else {
+          setSelectedPlayer('');
+          setBattingOrder(1);
+        }
+
+        setInning(1);
+        setInningHalf('TOP');
+        setOuts(0);
+        setBases({ 1: false, 2: false, 3: false });
+        setRbi(0);
+        setRuns(0);
+        setRecentHistory([]);
+        setScoreboard([]);
+        setOpponentScoreboard([]);
+        setTimelineData([]);
+
+        return data.id;
+      }
+    } catch (e) {
+      setError('Failed to create game');
+    }
+
     return null;
   };
 
