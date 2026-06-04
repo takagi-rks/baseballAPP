@@ -820,29 +820,105 @@ export default function QuickScoreInput() {
       <main className="space-y-6">
         {activeTab === 'breaking' && (
           <div className="space-y-6">
-            <ScoreInputPanel 
-              inning={inning}
-              inningHalf={inningHalf}
-              outs={outs}
-              bases={bases}
-              battingOrder={battingOrder}
-              selectedPlayer={selectedPlayer}
-              onPlayerChange={(pid) => {
-                setSelectedPlayer(pid);
-                const activePlayers = gamePlayers.length > 0 ? gamePlayers : players;
-                const p = activePlayers.find(x => x.id === parseInt(pid));
-                if (p) setBattingOrder(p.batting_order);
-              }}
-              players={gamePlayers.length > 0 ? gamePlayers : players}
-              rbi={rbi} setRbi={setRbi}
-              runs={runs} setRuns={setRuns}
-              onResultTap={handleResultTap}
-              onUndo={handleUndo}
-              lastInsertedId={lastInsertedId}
-              isProcessing={isProcessing}
-              resultOptions={RESULT_OPTIONS}
-            />
-            <RecentPlateAppearances recentHistory={recentHistory} players={players} title="直近の入力履歴" />
+            {isOurBatting ? (
+              <>
+                <ScoreInputPanel
+                  inning={inning}
+                  inningHalf={inningHalf}
+                  outs={outs}
+                  bases={bases}
+                  battingOrder={battingOrder}
+                  selectedPlayer={selectedPlayer}
+                  onPlayerChange={(pid) => {
+                    setSelectedPlayer(pid);
+                    const activePlayers = gamePlayers.length > 0 ? gamePlayers : players;
+                    const p = activePlayers.find(x => x.id === parseInt(pid));
+                    if (p) setBattingOrder(p.batting_order);
+                  }}
+                  players={gamePlayers.length > 0 ? gamePlayers : players}
+                  rbi={rbi} setRbi={setRbi}
+                  runs={runs} setRuns={setRuns}
+                  onResultTap={handleResultTap}
+                  onUndo={handleUndo}
+                  lastInsertedId={lastInsertedId}
+                  isProcessing={isProcessing}
+                  resultOptions={RESULT_OPTIONS}
+                />
+                <RecentPlateAppearances
+                  recentHistory={recentHistory}
+                  players={gamePlayers.length > 0 ? gamePlayers : players}
+                  title="直近の入力履歴"
+                />
+              </>
+            ) : (
+              <div className="bg-gray-900/70 border border-red-500/20 rounded-3xl p-5 shadow-2xl space-y-5">
+                <div>
+                  <div className="text-[10px] text-red-400 font-black uppercase tracking-[0.25em] mb-2">
+                    相手攻撃入力
+                  </div>
+                  <h2 className="text-2xl font-black text-white">
+                    {inning}回{inningHalf === 'TOP' ? '表' : '裏'}
+                  </h2>
+                  <p className="text-xs text-gray-500 mt-1">
+                    相手攻撃は打者ごとではなく、このイニングの守備結果だけを入力します。
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    ['失点', opponentRunsInput, setOpponentRunsInput],
+                    ['被安打', opponentHitsInput, setOpponentHitsInput],
+                    ['四球', opponentWalksInput, setOpponentWalksInput],
+                    ['死球', opponentHbpInput, setOpponentHbpInput],
+                    ['エラー', opponentErrorsInput, setOpponentErrorsInput],
+                  ].map(([label, value, setter]) => (
+                    <div key={String(label)} className="bg-gray-950/60 border border-gray-800 rounded-2xl p-3 text-center">
+                      <div className="text-[10px] text-gray-500 font-black mb-2">{String(label)}</div>
+                      <div className="flex items-center justify-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Math.max(0, Number(value) - 1))}
+                          disabled={isProcessing}
+                          className="w-9 h-9 rounded-full bg-gray-800 text-white font-black disabled:opacity-50"
+                        >
+                          -
+                        </button>
+                        <span className="text-2xl font-black text-red-300 w-8">{Number(value)}</span>
+                        <button
+                          type="button"
+                          onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Number(value) + 1)}
+                          disabled={isProcessing}
+                          className="w-9 h-9 rounded-full bg-gray-800 text-white font-black disabled:opacity-50"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div>
+                  <label className="block text-[10px] text-gray-500 font-black mb-2">メモ</label>
+                  <textarea
+                    value={opponentNoteInput}
+                    onChange={(e) => setOpponentNoteInput(e.target.value)}
+                    disabled={isProcessing}
+                    rows={3}
+                    className="w-full bg-gray-950/60 border border-gray-800 rounded-2xl p-3 text-sm text-white focus:outline-none focus:border-red-500 disabled:opacity-50"
+                    placeholder="例：四球から失点、エラー絡みなど"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSaveOpponentHalf}
+                  disabled={isProcessing}
+                  className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-2xl active:scale-[0.98] disabled:opacity-50"
+                >
+                  相手攻撃を保存して次へ
+                </button>
+              </div>
+            )}
           </div>
         )}
 
