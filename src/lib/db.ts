@@ -71,4 +71,18 @@ export async function initDb() {
   for (const query of queries) {
     await pool.query(query);
   }
+
+  const alterQueries = [
+    `ALTER TABLE games ADD COLUMN IF NOT EXISTS batting_side VARCHAR(10) DEFAULT 'TOP';`,
+    `ALTER TABLE plate_appearances ADD COLUMN IF NOT EXISTS inning_half VARCHAR(10) DEFAULT 'TOP';`,
+    `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS hits_allowed INTEGER DEFAULT 0;`,
+    `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS walks_allowed INTEGER DEFAULT 0;`,
+    `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS hit_by_pitch_allowed INTEGER DEFAULT 0;`,
+    `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS errors_committed INTEGER DEFAULT 0;`,
+    `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS note TEXT DEFAULT '';`
+  ];
+
+  for (const query of alterQueries) {
+    await pool.query(query);
+  }
 }
