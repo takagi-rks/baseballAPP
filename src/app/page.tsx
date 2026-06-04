@@ -518,6 +518,15 @@ export default function QuickScoreInput() {
         setLastInsertedId(null);
         setLastSnapshot(null);
         setCurrentGameId(gid);
+
+        await Promise.all([
+          fetchGamesList(),
+          fetchGameDetails(gid),
+          fetchScoreboard(gid),
+          fetchRecentHistory(gid),
+          fetchPlayerStats(gid),
+          fetchTimeline(gid)
+        ]);
       }
     } catch (e) { setError("Failed to reset"); }
     finally { setIsProcessing(false); }
