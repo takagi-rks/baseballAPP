@@ -74,6 +74,7 @@ export default function QuickScoreInput() {
   const [editScoreThem, setEditScoreThem] = useState(0);
   const [editMemo, setEditMemo] = useState("");
   const [editStatus, setEditStatus] = useState("in_progress");
+  const [newGameLineup, setNewGameLineup] = useState<Record<number, string>>({});
 
   // --- Fetching Functions ---
 
@@ -499,10 +500,45 @@ export default function QuickScoreInput() {
     finally { setIsProcessing(false); }
   };
 
+  const saveNewGameLineup = async () => {
+    const entries = Object.entries(newGameLineup)
+      .map(([order, playerId]) => ({
+        batting_order: Number(order),
+        player_id: Number(playerId),
+      }))
+      .filter((entry) => entry.player_id > 0)
+      .sort((a, b) => a.batting_order - b.batting_order);
+
+    const usedPlayerIds = new Set<number>();
+
+    for (const entry of entries) {
+      if (usedPlayerIds.has(entry.player_id)) continue;
+      usedPlayerIds.add(entry.player_id);
+
+      const player = players.find((p) => p.id === entry.player_id);
+      if (!player) continue;
+
+      await fetch(`/api/players/${entry.player_id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: player.name,
+          uniform_number: player.uniform_number,
+          position: player.position,
+          batting_order: entry.batting_order,
+          is_active: true,
+        }),
+      });
+    }
+  };
+
   const handleNewGame = async () => {
     if (!confirm('New game?') || isProcessing) return;
     setIsProcessing(true);
     try {
+      await saveNewGameLineup();
+      await fetchPlayers();
+
       const gid = await createGame();
       if (gid) {
         if (players.length > 0) {
@@ -763,6 +799,45 @@ export default function QuickScoreInput() {
               onSave={handleUpdateGameDetails}
               isProcessing={isProcessing}
             />
+            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-5 shadow-lg">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-sm font-black text-gray-100">新規試合の打順設定</h3>
+                  <p className="text-[11px] text-gray-500 mt-1">新規試合開始前に、1番から順に選手を選択してください。</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                {Array.from({ length: 9 }, (_, index) => {
+                  const order = index + 1;
+                  return (
+                    <div key={order} className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-sm font-black text-blue-400">
+                        {order}
+                      </div>
+                      <select
+                        value={newGameLineup[order] || ''}
+                        onChange={(e) => setNewGameLineup((prev) => ({ ...prev, [order]: e.target.value }))}
+                        disabled={isProcessing}
+                        className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                      >
+                        <option value="">選手を選択</option>
+                        {players.map((player) => (
+                          <option key={player.id} value={player.id}>
+                            #{player.uniform_number} {player.name} ({player.position})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-[10px] text-gray-600 mt-3">
+                ※ 未選択の打順は現在の選手設定を維持します。同じ選手を複数選んだ場合、最初の打順だけ反映します。
+              </p>
+            </div>
+
             <GameList 
               games={gamesList}
               currentGameId={currentGameId}
