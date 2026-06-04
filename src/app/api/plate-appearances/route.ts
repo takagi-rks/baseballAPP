@@ -62,15 +62,18 @@ export async function POST(request: NextRequest) {
     ];
     const paResult = await pool.query(paQuery, paValues);
 
-    // 変更理由: 自チーム得点を inning_scores に upsert
-    if ((runs ?? 0) > 0) {
+    // 自チーム得点を inning_scores に upsert
+    // スコアボードには「この打席で入ったチーム得点」を保存する
+    const teamRuns = Math.max(Number(rbi ?? 0), Number(runs ?? 0));
+
+    if (teamRuns > 0) {
       const upsertQuery = `
         INSERT INTO inning_scores (game_id, inning, team_side, runs)
         VALUES ($1, $2, 'us', $3)
         ON CONFLICT (game_id, inning, team_side)
         DO UPDATE SET runs = inning_scores.runs + EXCLUDED.runs;
       `;
-      await pool.query(upsertQuery, [game_id, inning, runs]);
+      await pool.query(upsertQuery, [game_id, inning, teamRuns]);
     }
 
     return NextResponse.json(
