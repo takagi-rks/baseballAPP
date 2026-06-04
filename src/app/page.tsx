@@ -246,14 +246,41 @@ export default function QuickScoreInput() {
       battingOrder, selectedPlayer, inning, inningHalf, outs, bases: { ...bases }, rbi, runs
     };
 
+    // 自動計算: 進塁ロジックより先にランナー状態から得点/打点を算出
+    const safeBases = bases && typeof bases === 'object' ? bases : { 1: false, 2: false, 3: false };
+    let autoRuns = 0;
+    let autoRbi = 0;
+    if (option.detail === 'SINGLE') {
+      if (safeBases[3]) { autoRuns += 1; autoRbi += 1; }
+    } else if (option.detail === 'DOUBLE') {
+      if (safeBases[2]) { autoRuns += 1; autoRbi += 1; }
+      if (safeBases[3]) { autoRuns += 1; autoRbi += 1; }
+    } else if (option.detail === 'TRIPLE') {
+      if (safeBases[1]) { autoRuns += 1; autoRbi += 1; }
+      if (safeBases[2]) { autoRuns += 1; autoRbi += 1; }
+      if (safeBases[3]) { autoRuns += 1; autoRbi += 1; }
+    } else if (option.detail === 'HOME_RUN') {
+      autoRuns = 1; // 打者自身
+      if (safeBases[1]) autoRuns += 1;
+      if (safeBases[2]) autoRuns += 1;
+      if (safeBases[3]) autoRuns += 1;
+      autoRbi = autoRuns;
+    } else if (option.category === 'WALK' || option.detail === 'HIT_BY_PITCH') {
+      if (safeBases[1] && safeBases[2] && safeBases[3]) {
+        autoRuns += 1; autoRbi += 1; // 満塁押し出し
+      }
+    }
+    const finalRbi = rbi > 0 ? rbi : autoRbi;
+    const finalRuns = runs > 0 ? runs : autoRuns;
+
     const payload = {
       game_id: currentGameId,
       player_id: parseInt(selectedPlayer),
       inning,
       result_category: option.category,
       result_detail: option.detail,
-      rbi,
-      runs,
+      rbi: finalRbi,
+      runs: finalRuns,
       stolen_bases: 0,
       inning_half: inningHalf,
       slugging_value: option.slugging
@@ -296,35 +323,51 @@ export default function QuickScoreInput() {
           }
         };
 
-        if (option.category === 'OUT' || option.category === 'SACRIFICE') {
+        // 防御: bases が不正な場合の初期化
+        if (!nextBases || typeof nextBases !== 'object') {
+          nextBases = { 1: false, 2: false, 3: false };
+        }
+
+        if (
+          option.category === 'OUT' ||
+          option.category === 'SACRIFICE' ||
+          option.detail === 'STRIKEOUT' ||
+          option.detail === 'SAC_BUNT' ||
+          option.detail === 'SAC_FLY'
+        ) {
           addOut(option.detail === 'DOUBLE_PLAY' ? 2 : 1);
         } else if (option.detail === 'SINGLE') {
+          // 三塁走者は生還済み → 塁から除去
           nextBases = {
             1: true,
-            2: nextBases[1],
-            3: nextBases[2],
+            2: nextBases[1] || false,
+            3: nextBases[2] || false,
           };
         } else if (option.detail === 'DOUBLE') {
+          // 二塁・三塁走者は生還済み → 塁から除去
           nextBases = {
             1: false,
             2: true,
-            3: nextBases[1] || nextBases[2],
+            3: nextBases[1] || false,
           };
         } else if (option.detail === 'TRIPLE') {
+          // 全走者生還
           nextBases = { 1: false, 2: false, 3: true };
         } else if (option.detail === 'HOME_RUN') {
           nextBases = { 1: false, 2: false, 3: false };
         } else if (option.category === 'WALK' || option.detail === 'HIT_BY_PITCH') {
-          // 強制進塁: 一塁が埋まっている場合のみ押し出し
           if (nextBases[1] && nextBases[2] && nextBases[3]) {
-            // 満塁 → 三塁走者生還
+            // 満塁 → 押し出し(三塁走者生還)・塁はそのまま
             nextBases = { 1: true, 2: true, 3: true };
           } else if (nextBases[1] && nextBases[2]) {
+            // 一二塁 → 打者一塁・強制進塁
             nextBases = { 1: true, 2: true, 3: true };
           } else if (nextBases[1]) {
-            nextBases = { 1: true, 2: true, 3: nextBases[3] };
+            // 一塁のみ → 打者一塁・一塁走者二塁
+            nextBases = { 1: true, 2: true, 3: nextBases[3] || false };
           } else {
-            nextBases = { 1: true, 2: nextBases[2], 3: nextBases[3] };
+            // 一塁空 → 打者一塁のみ
+            nextBases = { 1: true, 2: nextBases[2] || false, 3: nextBases[3] || false };
           }
         }
 
