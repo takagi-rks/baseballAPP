@@ -44,6 +44,7 @@ export default function QuickScoreInput() {
   const [runs, setRuns] = useState(0);
 
   const [players, setPlayers] = useState<Player[]>([]);
+  const [gamePlayers, setGamePlayers] = useState<Player[]>([]);
   const [recentHistory, setRecentHistory] = useState<PlateAppearance[]>([]);
   const [playerStats, setPlayerStats] = useState<PlayerStat[]>([]);
   const [scoreboard, setScoreboard] = useState<{ inning: number, runs: number }[]>([]);
@@ -132,7 +133,9 @@ export default function QuickScoreInput() {
     try {
       const resp = await fetch(`/api/plate-appearances/recent?game_id=${gid}`);
       const json = await resp.json();
-      const history = normalizeResponse<any>(json, ['data', 'history']);
+      const dataHistory = normalizeResponse<PlateAppearance>(json, ['data', 'history']);
+      const rootHistory = normalizeResponse<PlateAppearance>(json, ['history']);
+      const history = dataHistory.length > 0 ? dataHistory : rootHistory;
       setRecentHistory(history);
     } catch (e) {
       setError('直近履歴の取得に失敗しました');
@@ -342,10 +345,11 @@ export default function QuickScoreInput() {
 
       if (response.ok) {
         // Handle logic for next batter and inning state
-        const currentIndex = players.findIndex(p => p.id === parseInt(selectedPlayer));
-        if (currentIndex !== -1 && players.length > 0) {
-          const nextIndex = (currentIndex + 1) % players.length;
-          const nextPlayer = players[nextIndex];
+        const activePlayers = gamePlayers.length > 0 ? gamePlayers : players;
+        const currentIndex = activePlayers.findIndex(p => p.id === parseInt(selectedPlayer));
+        if (currentIndex !== -1 && activePlayers.length > 0) {
+          const nextIndex = (currentIndex + 1) % activePlayers.length;
+          const nextPlayer = activePlayers[nextIndex];
           setBattingOrder(nextPlayer.batting_order);
           setSelectedPlayer(String(nextPlayer.id));
         }
@@ -551,9 +555,26 @@ export default function QuickScoreInput() {
 
       setPlayers(latestPlayers);
 
-      const orderedPlayers = [...latestPlayers]
-        .filter((p) => p && p.batting_order)
-        .sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999));
+      const selectedLineup = Object.entries(newGameLineup)
+        .map(([order, playerId]) => ({
+          batting_order: Number(order),
+          player_id: Number(playerId),
+        }))
+        .filter((entry) => entry.player_id > 0)
+        .sort((a, b) => a.batting_order - b.batting_order)
+        .map((entry) => {
+          const player = latestPlayers.find((p: Player) => p.id === entry.player_id);
+          return player ? { ...player, batting_order: entry.batting_order } : null;
+        })
+        .filter(Boolean) as Player[];
+
+      const orderedPlayers = selectedLineup.length > 0
+        ? selectedLineup
+        : [...latestPlayers]
+            .filter((p) => p && p.batting_order)
+            .sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999));
+
+      setGamePlayers(orderedPlayers);
 
       const gid = await createGame();
 
@@ -752,7 +773,7 @@ export default function QuickScoreInput() {
                 const p = players.find(x => x.id === parseInt(pid));
                 if (p) setBattingOrder(p.batting_order);
               }}
-              players={players}
+              players={gamePlayers.length > 0 ? gamePlayers : players}
               rbi={rbi} setRbi={setRbi}
               runs={runs} setRuns={setRuns}
               onResultTap={handleResultTap}
