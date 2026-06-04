@@ -535,16 +535,37 @@ export default function QuickScoreInput() {
   const handleNewGame = async () => {
     if (!confirm('New game?') || isProcessing) return;
     setIsProcessing(true);
+    setError(null);
+
     try {
       await saveNewGameLineup();
-      await fetchPlayers();
+
+      // 打順更新後のplayersを再取得
+      const playersResp = await fetch('/api/players', { cache: 'no-store' });
+      const playersJson = await playersResp.json();
+      const latestPlayers = playersJson.success && Array.isArray(playersJson.players)
+        ? playersJson.players
+        : [];
+
+      setPlayers(latestPlayers);
+
+      const orderedPlayers = [...latestPlayers]
+        .filter((p) => p && p.batting_order)
+        .sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999));
 
       const gid = await createGame();
+
       if (gid) {
-        if (players.length > 0) {
-          setBattingOrder(players[0].batting_order);
-          setSelectedPlayer(String(players[0].id));
+        setCurrentGameId(gid);
+
+        if (orderedPlayers.length > 0) {
+          setBattingOrder(orderedPlayers[0].batting_order || 1);
+          setSelectedPlayer(String(orderedPlayers[0].id));
+        } else {
+          setBattingOrder(1);
+          setSelectedPlayer('');
         }
+
         setInning(1);
         setInningHalf('TOP');
         setOuts(0);
@@ -553,7 +574,12 @@ export default function QuickScoreInput() {
         setRuns(0);
         setLastInsertedId(null);
         setLastSnapshot(null);
-        setCurrentGameId(gid);
+        setRecentHistory([]);
+        setScoreboard([]);
+        setOpponentScoreboard([]);
+        setTimelineData([]);
+        setPlayerStats([]);
+        setAiComments([]);
 
         await Promise.all([
           fetchGamesList(),
@@ -561,11 +587,15 @@ export default function QuickScoreInput() {
           fetchScoreboard(gid),
           fetchRecentHistory(gid),
           fetchPlayerStats(gid),
-          fetchTimeline(gid)
+          fetchTimeline(gid),
+          fetchAIComments(gid),
         ]);
       }
-    } catch (e) { setError("Failed to reset"); }
-    finally { setIsProcessing(false); }
+    } catch (e) {
+      setError("Failed to reset");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleAddPlayer = async () => {
