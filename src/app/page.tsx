@@ -217,33 +217,7 @@ export default function QuickScoreInput() {
       });
 
       const data = await resp.json();
-
-      if (data.success) {
-        const orderedPlayers = Array.isArray(players)
-          ? [...players].sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999))
-          : [];
-
-        if (orderedPlayers.length > 0) {
-          setSelectedPlayer(String(orderedPlayers[0].id));
-          setBattingOrder(orderedPlayers[0].batting_order || 1);
-        } else {
-          setSelectedPlayer('');
-          setBattingOrder(1);
-        }
-
-        setInning(1);
-        setInningHalf('TOP');
-        setOuts(0);
-        setBases({ 1: false, 2: false, 3: false });
-        setRbi(0);
-        setRuns(0);
-        setRecentHistory([]);
-        setScoreboard([]);
-        setOpponentScoreboard([]);
-        setTimelineData([]);
-
-        return data.id;
-      }
+      if (data.success) return data.id;
     } catch (e) {
       setError('Failed to create game');
     }
@@ -770,7 +744,8 @@ export default function QuickScoreInput() {
               selectedPlayer={selectedPlayer}
               onPlayerChange={(pid) => {
                 setSelectedPlayer(pid);
-                const p = players.find(x => x.id === parseInt(pid));
+                const activePlayers = gamePlayers.length > 0 ? gamePlayers : players;
+                const p = activePlayers.find(x => x.id === parseInt(pid));
                 if (p) setBattingOrder(p.batting_order);
               }}
               players={gamePlayers.length > 0 ? gamePlayers : players}
