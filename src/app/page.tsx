@@ -152,7 +152,7 @@ export default function QuickScoreInput() {
 
   const fetchScoreboard = async (gid: number) => {
     try {
-      const resp = await fetch(`/api/scoreboard?game_id=${gid}`);
+      const resp = await fetch(`/api/scoreboard?game_id=${gid}&t=${Date.now()}`, { cache: 'no-store' });
       const json = (await resp.json()) as ScoreboardResponse;
       if (!json.success) throw new Error(typeof json.error === 'string' ? json.error : 'Failed');
       // Handle both possible shapes
