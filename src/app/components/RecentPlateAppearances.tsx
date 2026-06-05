@@ -82,7 +82,7 @@ export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
 
   if (safeHistory.length === 0) {
     return (
-      <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-2">
+      <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-1.5">
         <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">
           {title}
         </div>
@@ -99,28 +99,28 @@ export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
   }, {});
 
   return (
-    <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-2">
-      <div className="flex items-center justify-between mb-2">
+    <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-1.5">
+      <div className="flex items-center justify-between mb-1">
         <h3 className="text-[10px] text-gray-500 font-black uppercase tracking-widest">
           {title}
         </h3>
         <span className="text-[9px] text-gray-600">×で削除→再入力</span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-0.5">
         {Object.entries(grouped).map(([inningLabel, items]) => (
           <div key={inningLabel}>
-            <div className="text-[10px] text-blue-300 font-black mb-1 border-b border-blue-900/40 pb-1">
-              ⚾ {inningLabel}
+            <div className="text-[10px] text-blue-300 font-black mb-0.5 text-center">
+              ー{inningLabel}ー
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {items.map((item: any, index) => {
                 const player = players.find((p) => Number(p.id) === Number(item.player_id));
                 return (
                   <div
                     key={item.id || index}
-                    className={`border rounded-lg px-2 py-1 flex items-center justify-between gap-2 ${getResultClass(item)}`}
+                    className={`border rounded-md px-2 py-0.5 flex items-center justify-between gap-2 ${getResultClass(item)}`}
                   >
                     <span className="text-[10px] font-bold truncate">
                       {player?.name || '不明'}
@@ -138,7 +138,7 @@ export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
                           type="button"
                           onClick={() => onDelete(Number(item.id))}
                           disabled={isProcessing}
-                          className="w-5 h-5 rounded bg-black/30 text-[11px] leading-none text-white disabled:opacity-30"
+                          className="w-4 h-4 rounded bg-black/30 text-[11px] leading-none text-white disabled:opacity-30"
                           aria-label="打席履歴を削除"
                         >
                           ×
