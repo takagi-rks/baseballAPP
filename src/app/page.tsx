@@ -952,7 +952,7 @@ if (
             <button
               type="button"
               onClick={handleFinishGame}
-              disabled={isProcessing || gameDetails?.status === 'completed'}
+              disabled={isProcessing}
               className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-2xl active:scale-[0.98] disabled:opacity-50"
             >
               {gameDetails?.status === 'completed' ? '試合終了済み' : '試合終了'}
@@ -986,7 +986,7 @@ if (
                   onResultTap={handleResultTap}
                   onUndo={handleUndo}
                   lastInsertedId={lastInsertedId}
-                  isProcessing={isProcessing || gameDetails?.status === 'completed'}
+                  isProcessing={isProcessing}
                   resultOptions={RESULT_OPTIONS}
                 />
                 <RecentPlateAppearances
@@ -1025,7 +1025,7 @@ if (
                         <button
                           type="button"
                           onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Math.max(0, Number(value) - 1))}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="w-9 h-9 rounded-full bg-gray-800 text-white font-black disabled:opacity-50"
                         >
                           -
@@ -1034,7 +1034,7 @@ if (
                         <button
                           type="button"
                           onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Number(value) + 1)}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="w-9 h-9 rounded-full bg-gray-800 text-white font-black disabled:opacity-50"
                         >
                           +
@@ -1049,7 +1049,7 @@ if (
                   <textarea
                     value={opponentNoteInput}
                     onChange={(e) => setOpponentNoteInput(e.target.value)}
-                    disabled={isProcessing || gameDetails?.status === 'completed'}
+                    disabled={isProcessing}
                     rows={3}
                     className="w-full bg-gray-950/60 border border-gray-800 rounded-2xl p-3 text-sm text-white focus:outline-none focus:border-red-500 disabled:opacity-50"
                     placeholder="例：四球から失点、エラー絡みなど"
@@ -1059,7 +1059,7 @@ if (
                 <button
                   type="button"
                   onClick={handleSaveOpponentHalf}
-                  disabled={isProcessing || gameDetails?.status === 'completed'}
+                  disabled={isProcessing}
                   className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-2 rounded-2xl active:scale-[0.98] disabled:opacity-50"
                 >
                   相手攻撃を保存して次へ
@@ -1144,7 +1144,7 @@ if (
                       setIsCreatingGame(true);
                       setNewGameStep(1);
                     }}
-                    disabled={isProcessing || gameDetails?.status === 'completed'}
+                    disabled={isProcessing}
                     className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black px-3 py-1.5 rounded-lg active:scale-[0.98] disabled:opacity-50"
                   >
                     新規作成
@@ -1186,7 +1186,7 @@ if (
                             setIsCreatingGame(false);
                             setNewGameStep(1);
                           }}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-lg disabled:opacity-50"
                         >
                           キャンセル
@@ -1194,7 +1194,7 @@ if (
                         <button
                           type="button"
                           onClick={() => setNewGameStep(2)}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="flex-1 bg-blue-600 text-white text-xs font-black py-2 rounded-lg disabled:opacity-50"
                         >
                           打順選択へ
@@ -1223,7 +1223,7 @@ if (
                               <select
                                 value={newGameLineup[order] || ''}
                                 onChange={(e) => setNewGameLineup((prev) => ({ ...prev, [order]: e.target.value }))}
-                                disabled={isProcessing || gameDetails?.status === 'completed'}
+                                disabled={isProcessing}
                                 className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
                               >
                                 <option value="">スキップ</option>
@@ -1249,7 +1249,7 @@ if (
                         <button
                           type="button"
                           onClick={() => setNewGameStep(1)}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-lg disabled:opacity-50"
                         >
                           戻る
@@ -1261,7 +1261,7 @@ if (
                             if (!validateNewGameLineup()) return;
                             setNewGameStep(3);
                           }}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="flex-1 bg-blue-600 text-white text-xs font-black py-2 rounded-lg disabled:opacity-50"
                         >
                           試合情報へ
@@ -1319,7 +1319,7 @@ if (
                         <button
                           type="button"
                           onClick={() => setNewGameStep(2)}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-lg disabled:opacity-50"
                         >
                           戻る
@@ -1327,7 +1327,7 @@ if (
                         <button
                           type="button"
                           onClick={handleNewGame}
-                          disabled={isProcessing || gameDetails?.status === 'completed'}
+                          disabled={isProcessing}
                           className="flex-1 bg-green-600 hover:bg-green-500 text-white text-xs font-black py-2 rounded-lg active:scale-[0.98] disabled:opacity-50"
                         >
                           この内容で試合開始
