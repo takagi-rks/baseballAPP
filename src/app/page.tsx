@@ -78,6 +78,7 @@ export default function QuickScoreInput() {
   const [newGameLineup, setNewGameLineup] = useState<Record<number, string>>({});
   const [isCreatingGame, setIsCreatingGame] = useState(false);
   const [newGameStep, setNewGameStep] = useState<1 | 2 | 3>(1);
+  const [newGameBattingSide, setNewGameBattingSide] = useState<'TOP' | 'BOTTOM'>('TOP');
 
   const [opponentRunsInput, setOpponentRunsInput] = useState(0);
   const [opponentHitsInput, setOpponentHitsInput] = useState(0);
@@ -222,6 +223,7 @@ export default function QuickScoreInput() {
         body: JSON.stringify({
           opponent: editOpponent || '練習試合',
           status: 'in_progress',
+          batting_side: newGameBattingSide,
         }),
       });
 
@@ -824,6 +826,12 @@ export default function QuickScoreInput() {
       <main className="space-y-6">
         {activeTab === 'breaking' && (
           <div className="space-y-6">
+            <Scoreboard
+              scores={scoreboard}
+              opponentScores={opponentScoreboard}
+              battingSide={gameDetails?.batting_side || 'TOP'}
+            />
+
             {isOurBatting ? (
               <>
                 <ScoreInputPanel
@@ -1130,6 +1138,34 @@ export default function QuickScoreInput() {
                       <div>
                         <h3 className="text-sm font-black text-gray-100">試合情報入力</h3>
                         <p className="text-[11px] text-gray-500 mt-1">対戦相手・球場などを入力して試合を開始します。</p>
+                      </div>
+
+                      <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-4">
+                        <h4 className="text-xs font-black text-gray-300 mb-3">先攻/後攻</h4>
+                        <div className="grid grid-cols-2 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => setNewGameBattingSide('TOP')}
+                            className={`py-3 rounded-xl text-xs font-black border ${
+                              newGameBattingSide === 'TOP'
+                                ? 'bg-blue-500/20 border-blue-500 text-blue-300'
+                                : 'bg-gray-900 border-gray-800 text-gray-500'
+                            }`}
+                          >
+                            先攻（表）
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setNewGameBattingSide('BOTTOM')}
+                            className={`py-3 rounded-xl text-xs font-black border ${
+                              newGameBattingSide === 'BOTTOM'
+                                ? 'bg-blue-500/20 border-blue-500 text-blue-300'
+                                : 'bg-gray-900 border-gray-800 text-gray-500'
+                            }`}
+                          >
+                            後攻（裏）
+                          </button>
+                        </div>
                       </div>
 
                       <GameInfoForm

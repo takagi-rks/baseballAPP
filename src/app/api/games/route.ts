@@ -10,13 +10,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const opponent = body.opponent ?? '練習試合';
     const status = body.status ?? 'in_progress';
+    const battingSide = body.batting_side ?? 'TOP';
 
     const query = `
-      INSERT INTO games (opponent, status)
-      VALUES ($1, $2)
+      INSERT INTO games (opponent, status, batting_side)
+      VALUES ($1, $2, $3)
       RETURNING id;
     `;
-    const result = await pool.query(query, [opponent, status]);
+    const result = await pool.query(query, [opponent, status, battingSide]);
     return NextResponse.json({ success: true, id: result.rows[0].id });
 
   } catch (error) {
