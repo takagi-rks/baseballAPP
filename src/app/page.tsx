@@ -570,11 +570,15 @@ export default function QuickScoreInput() {
         throw new Error(data.error || 'Failed to save opponent inning');
       }
 
-      if (inningHalf === 'TOP') {
-        setInningHalf('BOTTOM');
-      } else {
+      const ourSide = gameDetails?.batting_side || 'TOP';
+
+      if (ourSide === 'TOP') {
+        // 自チームが先攻: 相手の裏攻撃保存後、次回表へ
         setInning(inning + 1);
         setInningHalf('TOP');
+      } else {
+        // 自チームが後攻: 相手の表攻撃保存後、同回裏へ
+        setInningHalf('BOTTOM');
       }
 
       resetOpponentInput();
