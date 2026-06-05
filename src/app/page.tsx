@@ -927,7 +927,7 @@ if (
       )}
 
       {/* Game Summary */}
-      {gameDetails && (
+      {gameDetails && activeTab !== 'breaking' && (
         <div className="bg-gray-900/70 border border-gray-800 rounded-2xl p-4 mb-6 shadow-lg">
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -1425,7 +1425,7 @@ if (
       {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-gray-950/90 backdrop-blur-md border-t border-gray-900/80 flex justify-around py-3 px-2 pb-5 z-40 shadow-[0_-8px_30px_rgba(0,0,0,0.7)]">
         {[
-          { id: 'breaking', label: '速報', icon: (active: boolean) => (
+          { id: 'breaking', label: '入力', icon: (active: boolean) => (
             <svg className={`w-5 h-5 ${active ? 'text-blue-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
