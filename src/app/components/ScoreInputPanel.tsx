@@ -6,6 +6,8 @@ interface ScoreInputPanelProps {
   inningHalf: 'TOP' | 'BOTTOM';
   outs: number;
   setOuts: (value: number) => void;
+  scoreEditInning: number;
+  setScoreEditInning: (value: number) => void;
   currentRunsUs: number;
   currentRunsThem: number;
   onManualScoreAdjust: (teamSide: 'us' | 'them', delta: number) => void;
@@ -27,7 +29,7 @@ interface ScoreInputPanelProps {
 }
 
 export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
-  inning, inningHalf, outs, setOuts, currentRunsUs, currentRunsThem, onManualScoreAdjust, bases, setBases,
+  inning, inningHalf, outs, setOuts, scoreEditInning, setScoreEditInning, currentRunsUs, currentRunsThem, onManualScoreAdjust, bases, setBases,
   battingOrder, selectedPlayer, onPlayerChange, players,
   rbi, setRbi, runs, setRuns,
   onResultTap, onUndo, lastInsertedId,
@@ -104,7 +106,25 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
       <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-3 shadow-lg">
         <div className="flex items-center justify-between mb-2">
           <h3 className="text-[10px] text-gray-400 font-black uppercase tracking-widest">得点手動修正</h3>
-          <span className="text-[9px] text-gray-600">現在イニング</span>
+          <span className="text-[9px] text-blue-300 font-black">{scoreEditInning}回を修正中</span>
+        </div>
+
+        <div className="grid grid-cols-7 gap-1 mb-3">
+          {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setScoreEditInning(i)}
+              disabled={isProcessing}
+              className={`py-1 rounded-lg text-[10px] font-black border ${
+                scoreEditInning === i
+                  ? 'bg-blue-600 text-white border-blue-400'
+                  : 'bg-gray-950/60 text-gray-400 border-gray-800'
+              }`}
+            >
+              {i}回
+            </button>
+          ))}
         </div>
 
         <div className="grid grid-cols-2 gap-2">

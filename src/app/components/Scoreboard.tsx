@@ -11,9 +11,10 @@ interface ScoreboardProps {
   battingSide?: 'TOP' | 'BOTTOM';
 }
 
-function getRun(scores: InningScore[] | undefined, inning: number): number {
-  if (!Array.isArray(scores)) return 0;
-  return scores.find((s) => Number(s.inning) === inning)?.runs || 0;
+function getRun(scores: InningScore[] | undefined, inning: number): number | null {
+  if (!Array.isArray(scores)) return null;
+  const row = scores.find((s) => Number(s.inning) === inning);
+  return row ? Number(row.runs || 0) : null;
 }
 
 function totalRuns(scores: InningScore[] | undefined): number {

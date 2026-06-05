@@ -50,6 +50,7 @@ export default function QuickScoreInput() {
   const [playerStats, setPlayerStats] = useState<PlayerStat[]>([]);
   const [scoreboard, setScoreboard] = useState<{ inning: number, runs: number }[]>([]);
   const [opponentScoreboard, setOpponentScoreboard] = useState<{ inning: number, runs: number }[]>([]);
+  const [scoreEditInning, setScoreEditInning] = useState(1);
   const [gamesList, setGamesList] = useState<Game[]>([]);
   const [aiComments, setAiComments] = useState<AiComment[]>([]);
 
@@ -551,7 +552,7 @@ if (
     setOpponentNoteInput('');
   };
 
-  const getCurrentInningRuns = (
+  const getInningRuns = (
     scores: { inning: number; runs: number }[],
     targetInning: number
   ): number => {
@@ -567,7 +568,7 @@ if (
     ) return;
 
     const sourceScores = teamSide === 'us' ? scoreboard : opponentScoreboard;
-    const currentRuns = getCurrentInningRuns(sourceScores, inning);
+    const currentRuns = getInningRuns(sourceScores, scoreEditInning);
     const nextRuns = Math.max(0, currentRuns + delta);
 
     if (nextRuns === currentRuns) return;
@@ -581,7 +582,7 @@ if (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           game_id: currentGameId,
-          inning,
+          inning: scoreEditInning,
           team_side: teamSide,
           runs: nextRuns,
         }),
@@ -1003,8 +1004,10 @@ if (
                   inningHalf={inningHalf}
                   outs={outs}
                   setOuts={setOuts}
-                  currentRunsUs={getCurrentInningRuns(scoreboard, inning)}
-                  currentRunsThem={getCurrentInningRuns(opponentScoreboard, inning)}
+                  scoreEditInning={scoreEditInning}
+                  setScoreEditInning={setScoreEditInning}
+                  currentRunsUs={getInningRuns(scoreboard, scoreEditInning)}
+                  currentRunsThem={getInningRuns(opponentScoreboard, scoreEditInning)}
                   onManualScoreAdjust={handleManualScoreAdjust}
                   bases={bases}
                   setBases={setBases}
