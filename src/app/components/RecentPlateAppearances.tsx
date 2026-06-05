@@ -19,9 +19,9 @@ function getResultLabel(item: any): string {
     WALK: '四球',
     HIT_BY_PITCH: '死球',
 
-    STRIKEOUT: '三振',
-    GROUND_OUT: 'ゴロ',
-    FLY_OUT: 'フライ',
+    STRIKEOUT: '凡退',
+    GROUND_OUT: '凡退',
+    FLY_OUT: '凡退',
 
     SAC_BUNT: '犠打',
     SAC_FLY: '犠飛',
@@ -57,6 +57,10 @@ function getResultClass(item: any): string {
     item.result_detail === 'WALK'
   ) {
     return 'bg-green-500/20 border-green-500/40 text-green-200';
+  }
+
+  if (['STRIKEOUT', 'GROUND_OUT', 'FLY_OUT'].includes(item.result_detail)) {
+    return 'bg-gray-800/70 border-gray-700 text-gray-300';
   }
 
   return 'bg-gray-800/60 border-gray-700 text-gray-300';
@@ -106,17 +110,17 @@ export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
       <div className="space-y-2">
         {Object.entries(grouped).map(([inningLabel, items]) => (
           <div key={inningLabel}>
-            <div className="text-[9px] text-gray-500 font-black mb-1">
-              {inningLabel}
+            <div className="text-[10px] text-blue-300 font-black mb-1 border-b border-blue-900/40 pb-1">
+              ⚾ {inningLabel}
             </div>
 
-            <div className="grid grid-cols-2 gap-1">
+            <div className="space-y-1">
               {items.map((item: any, index) => {
                 const player = players.find((p) => Number(p.id) === Number(item.player_id));
                 return (
                   <div
                     key={item.id || index}
-                    className={`border rounded-lg px-2 py-1 flex items-center justify-between gap-1 ${getResultClass(item)}`}
+                    className={`border rounded-lg px-2 py-1 flex items-center justify-between gap-2 ${getResultClass(item)}`}
                   >
                     <span className="text-[10px] font-bold truncate">
                       {player?.name || '不明'}
@@ -134,7 +138,7 @@ export const RecentPlateAppearances: React.FC<RecentPlateAppearancesProps> = ({
                           type="button"
                           onClick={() => onDelete(Number(item.id))}
                           disabled={isProcessing}
-                          className="w-4 h-4 rounded bg-black/30 text-[10px] leading-none text-white disabled:opacity-30"
+                          className="w-5 h-5 rounded bg-black/30 text-[11px] leading-none text-white disabled:opacity-30"
                           aria-label="打席履歴を削除"
                         >
                           ×

@@ -178,7 +178,7 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
 
       {/* Manual Runner Control */}
       <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-2 shadow-lg">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2">
           <h3 className="text-xs text-gray-400 font-black uppercase tracking-widest">ランナー手動調整</h3>
           <span className="text-[10px] text-gray-600">塁をタップでON/OFF</span>
         </div>
@@ -235,8 +235,8 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
       {/* Batting Order List */}
       <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-2 shadow-lg">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs text-gray-400 font-black uppercase tracking-widest">打順一覧</h3>
-          <span className="text-[10px] text-gray-600">現在打者を青で表示</span>
+          <h3 className="text-[10px] text-gray-400 font-black uppercase tracking-widest">打順一覧</h3>
+          <span className="text-[9px] text-gray-600">タップで選択</span>
         </div>
 
         {orderedPlayers.length === 0 ? (
@@ -244,7 +244,7 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
             選手が登録されていません
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-2 max-h-72 overflow-y-auto pr-1">
+          <div className="grid grid-cols-4 gap-1">
             {orderedPlayers.map((player) => {
               const isCurrent = String(player.id) === String(selectedPlayer);
               const isNext = nextPlayer && String(player.id) === String(nextPlayer.id);
@@ -255,40 +255,23 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
                   type="button"
                   onClick={() => onPlayerChange(String(player.id))}
                   disabled={isProcessing}
-                  className={`w-full text-left rounded-xl border px-3 py-2 transition-all active:scale-[0.98] ${
+                  className={`min-h-[30px] rounded-lg border px-1 py-1 text-left transition-all active:scale-[0.98] disabled:opacity-50 ${
                     isCurrent
-                      ? 'bg-blue-500/15 border-blue-500/50 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+                      ? 'bg-blue-500/25 border-blue-400 text-white shadow-[0_0_10px_rgba(59,130,246,0.18)]'
                       : isNext
-                      ? 'bg-gray-800/70 border-gray-700'
-                      : 'bg-gray-950/40 border-gray-800 hover:border-gray-700'
+                      ? 'bg-gray-800/70 border-gray-600 text-gray-200'
+                      : 'bg-gray-950/40 border-gray-800 text-gray-400 hover:border-gray-700'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black ${
-                        isCurrent ? 'bg-blue-500 text-white' : 'bg-gray-800 text-gray-400'
-                      }`}>
-                        {player.batting_order}
-                      </span>
-                      <div className="min-w-0">
-                        <div className="text-sm font-black text-gray-100 truncate">
-                          <span className="text-gray-500 mr-1">#{player.uniform_number}</span>
-                          {player.name}
-                        </div>
-                        <div className="text-[10px] text-gray-500 truncate">{player.position}</div>
-                      </div>
-                    </div>
-
-                    {isCurrent && (
-                      <span className="text-[10px] bg-blue-500 text-white px-2 py-1 rounded-lg font-black shrink-0">
-                        打席中
-                      </span>
-                    )}
-                    {!isCurrent && isNext && (
-                      <span className="text-[10px] bg-gray-700 text-gray-300 px-2 py-1 rounded-lg font-bold shrink-0">
-                        次打者
-                      </span>
-                    )}
+                  <div className="flex items-center gap-1 min-w-0">
+                    <span className={`text-[10px] font-black shrink-0 ${
+                      isCurrent ? 'text-blue-200' : 'text-blue-400'
+                    }`}>
+                      {player.batting_order}
+                    </span>
+                    <span className="text-[10px] font-black truncate">
+                      {player.name}
+                    </span>
                   </div>
                 </button>
               );
