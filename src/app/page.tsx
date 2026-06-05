@@ -1137,9 +1137,7 @@ if (
               <div className="flex items-center justify-between gap-2 mb-2">
                 <div>
                   <h2 className="text-sm font-black text-gray-100">新規試合作成</h2>
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    
-                  </p>
+
                 </div>
 
                 {!isCreatingGame && (
@@ -1159,11 +1157,11 @@ if (
 
               {isCreatingGame && (
                 <div className="space-y-2">
-                  <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-black">
+                  <div className="grid grid-cols-3 gap-1 text-center text-[9px] font-black">
                     {[1, 2, 3].map((step) => (
                       <div
                         key={step}
-                        className={`rounded-xl py-2 border ${
+                        className={`rounded-md py-1 border ${
                           newGameStep === step
                             ? 'bg-blue-500/20 border-blue-500 text-blue-300'
                             : 'bg-gray-950/40 border-gray-800 text-gray-600'
@@ -1362,7 +1360,7 @@ if (
                 isProcessing ||
                 gameDetails?.status === 'completed'
               }
-              className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-2 rounded-xl disabled:opacity-50 mb-4"
+              className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-1.5 rounded-md disabled:opacity-50 mb-2 text-xs"
             >
               {gameDetails?.status === 'completed'
                 ? '試合終了済み'
