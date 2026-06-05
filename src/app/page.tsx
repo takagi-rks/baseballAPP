@@ -24,6 +24,7 @@ import { RecentPlateAppearances } from './components/RecentPlateAppearances';
 import { GameList } from './components/GameList';
 import { PlayerManager } from './components/PlayerManager';
 import { GameTimeline } from './components/GameTimeline';
+import { GameStatsTable } from './components/GameStatsTable';
 import { CareerStatsTable } from './components/CareerStatsTable';
 import { GameSummaryHistory } from './components/GameSummaryHistory';
 
@@ -1077,6 +1078,11 @@ if (
         {activeTab === 'score' && (
           <div className="space-y-3">
             <Scoreboard scores={scoreboard} opponentScores={opponentScoreboard} battingSide={gameDetails?.batting_side || 'TOP'} />
+            <GameStatsTable
+              games={gamesList}
+              players={gamePlayers.length > 0 ? gamePlayers : players}
+              initialGameId={currentGameId}
+            />
             <GameTimeline timeline={timelineData} />
           </div>
         )}
