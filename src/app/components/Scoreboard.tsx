@@ -11,11 +11,7 @@ interface ScoreboardProps {
   battingSide?: 'TOP' | 'BOTTOM';
 }
 
-function getRun(
-  scores: InningScore[] | undefined,
-  inning: number,
-  maxInning: number
-): number | null {
+function getRun(scores: InningScore[] | undefined, inning: number, maxInning: number): number | null {
   if (!Array.isArray(scores)) return null;
   const row = scores.find((s) => Number(s.inning) === inning);
   if (row) return Number(row.runs || 0);
@@ -29,64 +25,59 @@ function getMaxInning(scores: InningScore[] | undefined): number {
 
 function totalRuns(scores: InningScore[] | undefined): number {
   if (!Array.isArray(scores)) return 0;
-  return scores.reduce((sum, score) => sum + Number(score.runs || 0), 0);
+  return scores.reduce((sum, s) => sum + Number(s.runs || 0), 0);
 }
 
 export const Scoreboard: React.FC<ScoreboardProps> = ({
-  scores = [],
-  opponentScores = [],
-  battingSide = 'TOP',
+  scores = [], opponentScores = [], battingSide = 'TOP',
 }) => {
   const rows = battingSide === 'TOP'
-    ? [
-        { label: '自分', scores, accent: 'text-blue-400' },
-        { label: '相手', scores: opponentScores, accent: 'text-red-400' },
-      ]
-    : [
-        { label: '相手', scores: opponentScores, accent: 'text-red-400' },
-        { label: '自分', scores, accent: 'text-blue-400' },
-      ];
+    ? [{ label: '自分', scores, isUs: true }, { label: '相手', scores: opponentScores, isUs: false }]
+    : [{ label: '相手', scores: opponentScores, isUs: false }, { label: '自分', scores, isUs: true }];
 
   return (
-    <div className="bg-black/40 border border-gray-700/50 rounded-xl overflow-hidden mb-6 shadow-2xl">
-      <div className="grid grid-cols-[64px_repeat(7,1fr)_48px] text-[10px] text-gray-500 font-bold border-b border-gray-800 bg-gray-800/30 uppercase tracking-tighter">
-        <div className="text-center py-2 border-r border-gray-800">チーム</div>
-        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-          <div key={i} className="text-center py-2 border-r border-gray-800">
-            {i}
-          </div>
-        ))}
-        <div className="text-center py-2 bg-gray-700/30 text-gray-300 font-black">
-          R
-        </div>
-      </div>
-
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="grid grid-cols-[64px_repeat(7,1fr)_48px] text-sm font-black font-mono border-b border-gray-800 last:border-b-0"
-        >
-          <div className={`text-center py-3 border-r border-gray-800 font-black ${row.accent}`}>
-            {row.label}
-          </div>
-
-          {[1, 2, 3, 4, 5, 6, 7].map((inning) => {
-            const run = getRun(row.scores, inning, getMaxInning(row.scores));
+    <div className="bg-white border-b border-gray-200 overflow-x-auto">
+      <table className="w-full border-collapse text-center" style={{ tableLayout: 'fixed' }}>
+        <thead>
+          <tr className="bg-gray-50 border-b border-gray-200">
+            <th className="text-left text-[10px] font-semibold text-gray-400 py-2 pl-4 w-14">チーム</th>
+            {[1,2,3,4,5,6,7].map(i => (
+              <th key={i} className="text-[10px] font-semibold text-gray-400 py-2 w-8">{i}</th>
+            ))}
+            <th className="text-[10px] font-semibold text-gray-500 py-2 pr-4 w-10">R</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => {
+            const maxInn = getMaxInning(row.scores);
+            const total = totalRuns(row.scores);
             return (
-              <div
-                key={inning}
-                className="text-center py-3 border-r border-gray-800 text-gray-100 italic"
-              >
-                {run === null ? '' : run > 0 ? run : <span className="text-gray-700 text-xs font-normal">0</span>}
-              </div>
+              <tr key={row.label} className="border-b border-gray-100 last:border-b-0">
+                <td className={`text-left text-xs font-bold py-2.5 pl-4 ${row.isUs ? 'text-blue-600' : 'text-red-500'}`}>
+                  {row.label}
+                </td>
+                {[1,2,3,4,5,6,7].map(inning => {
+                  const run = getRun(row.scores, inning, maxInn);
+                  const hasScore = run !== null && run > 0;
+                  return (
+                    <td key={inning} className={`text-xs py-2.5 font-mono ${
+                      run === null ? 'text-gray-200'
+                        : hasScore
+                          ? row.isUs ? 'text-blue-600 font-bold bg-blue-50' : 'text-red-500 font-bold bg-red-50'
+                          : 'text-gray-300'
+                    }`}>
+                      {run === null ? '—' : run}
+                    </td>
+                  );
+                })}
+                <td className={`text-sm font-bold py-2.5 pr-4 font-mono ${row.isUs ? 'text-blue-600' : 'text-red-500'}`}>
+                  {total}
+                </td>
+              </tr>
             );
           })}
-
-          <div className={`text-center py-3 bg-blue-600/10 border-l border-blue-500/20 ${row.accent}`}>
-            {totalRuns(row.scores)}
-          </div>
-        </div>
-      ))}
+        </tbody>
+      </table>
     </div>
   );
 };
