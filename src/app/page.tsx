@@ -438,6 +438,45 @@ if (
     }
   };
 
+  const handleDeletePlateAppearance = async (plateAppearanceId: number) => {
+    if (
+      !currentGameId ||
+      isProcessing ||
+      gameDetails?.status === 'completed'
+    ) return;
+
+    const ok = window.confirm('この打席履歴を削除しますか？削除後、必要なら入れ直してください。');
+    if (!ok) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`/api/plate-appearances/${plateAppearanceId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to delete plate appearance');
+      }
+
+      await Promise.all([
+        fetchRecentHistory(currentGameId),
+        fetchPlayerStats(currentGameId),
+        fetchScoreboard(currentGameId),
+        fetchTimeline(currentGameId),
+        fetchAIComments(currentGameId),
+        fetchGamesList(),
+      ]);
+    } catch (e) {
+      setError('打席履歴の削除に失敗しました');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleUndo = async () => {
     if (!lastInsertedId || !currentGameId || isProcessing) return;
     if (!confirm('Undo?')) return;
@@ -1032,6 +1071,8 @@ if (
                   recentHistory={recentHistory}
                   players={gamePlayers.length > 0 ? gamePlayers : players}
                   title="直近の入力履歴"
+                  onDelete={handleDeletePlateAppearance}
+                  isProcessing={isProcessing}
                 />
               </>
             ) : (
