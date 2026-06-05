@@ -444,8 +444,7 @@ if (
   const handleDeletePlateAppearance = async (plateAppearanceId: number) => {
     if (
       !currentGameId ||
-      isProcessing ||
-      gameDetails?.status === 'completed'
+      isProcessing
     ) return;
 
     const ok = window.confirm('この打席履歴を削除しますか？削除後、必要なら入れ直してください。');
@@ -606,8 +605,7 @@ if (
   const handleManualScoreAdjust = async (teamSide: 'us' | 'them', delta: number) => {
     if (
       !currentGameId ||
-      isProcessing ||
-      gameDetails?.status === 'completed'
+      isProcessing
     ) return;
 
     const sourceScores = teamSide === 'us' ? scoreboard : opponentScoreboard;
@@ -651,8 +649,7 @@ if (
   const handleSaveOpponentHalf = async () => {
     if (
       !currentGameId ||
-      isProcessing ||
-      gameDetails?.status === 'completed'
+      isProcessing
     ) return;
     setIsProcessing(true);
     setError(null);
