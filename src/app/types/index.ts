@@ -46,6 +46,7 @@ export interface Player {
 export interface Game {
   id: number;
   opponent: string;
+  tournament_name?: string;
   location: string;
   score_us: number;
   score_them: number;

@@ -25,6 +25,7 @@ export async function initDb() {
       id SERIAL PRIMARY KEY,
       game_date DATE DEFAULT CURRENT_DATE,
       opponent VARCHAR(100) DEFAULT '練習試合',
+      tournament_name VARCHAR(100),
       location VARCHAR(100),
       memo TEXT,
       score_us INT DEFAULT 0,
@@ -74,6 +75,7 @@ export async function initDb() {
 
   const alterQueries = [
     `ALTER TABLE games ADD COLUMN IF NOT EXISTS batting_side VARCHAR(10) DEFAULT 'TOP';`,
+    `ALTER TABLE games ADD COLUMN IF NOT EXISTS tournament_name VARCHAR(100);`,
     `ALTER TABLE plate_appearances ADD COLUMN IF NOT EXISTS inning_half VARCHAR(10) DEFAULT 'TOP';`,
     `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS hits_allowed INTEGER DEFAULT 0;`,
     `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS walks_allowed INTEGER DEFAULT 0;`,

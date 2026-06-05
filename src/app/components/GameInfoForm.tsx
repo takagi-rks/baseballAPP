@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 interface GameInfoFormProps {
   editOpponent: string;
   setEditOpponent: (v: string) => void;
+  editTournamentName: string;
+  setEditTournamentName: (v: string) => void;
   editLocation: string;
   setEditLocation: (v: string) => void;
   editScoreThem: number;
@@ -17,6 +19,7 @@ interface GameInfoFormProps {
 
 export const GameInfoForm: React.FC<GameInfoFormProps> = ({
   editOpponent, setEditOpponent,
+  editTournamentName, setEditTournamentName,
   editLocation, setEditLocation,
   editStatus, setEditStatus,
   editMemo, setEditMemo,
@@ -43,6 +46,18 @@ export const GameInfoForm: React.FC<GameInfoFormProps> = ({
 
       <div className="grid grid-cols-2 gap-1.5 text-xs">
         <div>
+          <label className="block text-gray-500 mb-0.5 text-[9px]">大会名</label>
+          <input
+            type="text"
+            value={editTournamentName}
+            onChange={(e) => setEditTournamentName(e.target.value)}
+            disabled={isProcessing}
+            className="w-full bg-gray-900 border border-gray-700 rounded-md px-2 py-1 font-bold text-gray-100 focus:border-blue-500 outline-none disabled:opacity-50"
+            placeholder="練習試合"
+          />
+        </div>
+
+        <div>
           <label className="block text-gray-500 mb-0.5 text-[9px]">対戦相手</label>
           <input
             type="text"
@@ -53,7 +68,7 @@ export const GameInfoForm: React.FC<GameInfoFormProps> = ({
           />
         </div>
 
-        <div>
+        <div className="col-span-2">
           <label className="block text-gray-500 mb-0.5 text-[9px]">球場</label>
           <input
             type="text"

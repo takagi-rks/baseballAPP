@@ -74,6 +74,7 @@ export default function QuickScoreInput() {
   const [editPlayerOrder, setEditPlayerOrder] = useState("");
 
   const [editOpponent, setEditOpponent] = useState("");
+  const [editTournamentName, setEditTournamentName] = useState("");
   const [editLocation, setEditLocation] = useState("");
   const [editScoreThem, setEditScoreThem] = useState(0);
   const [editMemo, setEditMemo] = useState("");
@@ -133,6 +134,7 @@ export default function QuickScoreInput() {
       if (!game) throw new Error('Invalid game data');
       setGameDetails(game);
       setEditOpponent(game.opponent || "練習試合");
+      setEditTournamentName(game.tournament_name || "");
       setEditLocation(game.location || "");
       setEditMemo(game.memo || "");
       setEditStatus(game.status || "in_progress");
@@ -524,6 +526,7 @@ if (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           opponent: editOpponent,
+          tournament_name: editTournamentName,
           location: editLocation,
           memo: editMemo,
           status: editStatus,
@@ -718,6 +721,7 @@ if (
         },
         body: JSON.stringify({
           opponent: editOpponent,
+          tournament_name: editTournamentName,
           location: editLocation,
           memo: editMemo,
           status: 'completed',
@@ -1316,6 +1320,7 @@ if (
 
                       <GameInfoForm
                         editOpponent={editOpponent} setEditOpponent={setEditOpponent}
+                        editTournamentName={editTournamentName} setEditTournamentName={setEditTournamentName}
                         editLocation={editLocation} setEditLocation={setEditLocation}
                         editScoreThem={editScoreThem} setEditScoreThem={setEditScoreThem}
                         editStatus={editStatus} setEditStatus={setEditStatus}
@@ -1351,6 +1356,7 @@ if (
             {!isCreatingGame && (
               <GameInfoForm
                 editOpponent={editOpponent} setEditOpponent={setEditOpponent}
+                editTournamentName={editTournamentName} setEditTournamentName={setEditTournamentName}
                 editLocation={editLocation} setEditLocation={setEditLocation}
                 editScoreThem={editScoreThem} setEditScoreThem={setEditScoreThem}
                 editStatus={editStatus} setEditStatus={setEditStatus}

@@ -27,20 +27,22 @@ export async function PATCH(
   try {
     const { id } = await context.params;
     const body = await request.json();
-    const { opponent, location, memo, status, batting_side } = body;
+    const { opponent, tournament_name, location, memo, status, batting_side } = body;
 
     const query = `
       UPDATE games
       SET opponent = $1,
-          location = $2,
-          memo = $3,
-          status = $4,
-          batting_side = $5
-      WHERE id = $6;
+          tournament_name = $2,
+          location = $3,
+          memo = $4,
+          status = $5,
+          batting_side = $6
+      WHERE id = $7;
     `;
 
     await pool.query(query, [
       opponent || "練習試合",
+      tournament_name || "",
       location || "",
       memo || "",
       status || "in_progress",

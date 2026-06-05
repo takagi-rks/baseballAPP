@@ -30,7 +30,7 @@ export const GameList: React.FC<GameListProps> = ({
             ? new Date(game.game_date).toLocaleDateString('ja-JP', { month: '2-digit', day: '2-digit' })
             : '--/--';
 
-          const tournament = game.tournament_name || game.tournament || game.memo || '大会名未設定';
+          const tournament = game.tournament_name || '大会名未設定';
           const opponent = game.opponent || '対戦相手未設定';
           const score =
             typeof game.score_us === 'number' && typeof game.score_them === 'number'
