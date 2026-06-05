@@ -25,7 +25,6 @@ import { GameList } from './components/GameList';
 import { PlayerManager } from './components/PlayerManager';
 import { GameTimeline } from './components/GameTimeline';
 import { CareerStatsTable } from './components/CareerStatsTable';
-import { GameSummaryCard } from './components/GameSummaryCard';
 import { GameSummaryHistory } from './components/GameSummaryHistory';
 
 export default function QuickScoreInput() {
@@ -1157,14 +1156,6 @@ if (
 
         {activeTab === 'stats' && (
           <div className="space-y-3">
-            <GameSummaryCard
-              gameDetails={gameDetails}
-              scoreboard={scoreboard}
-              opponentScoreboard={opponentScoreboard}
-              playerStats={playerStats}
-              players={players}
-            />
-
             <GameSummaryHistory />
 
             <CareerStatsTable />
