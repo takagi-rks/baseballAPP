@@ -551,6 +551,59 @@ if (
     setOpponentNoteInput('');
   };
 
+  const getCurrentInningRuns = (
+    scores: { inning: number; runs: number }[],
+    targetInning: number
+  ): number => {
+    if (!Array.isArray(scores)) return 0;
+    return Number(scores.find((row) => Number(row.inning) === Number(targetInning))?.runs || 0);
+  };
+
+  const handleManualScoreAdjust = async (teamSide: 'us' | 'them', delta: number) => {
+    if (
+      !currentGameId ||
+      isProcessing ||
+      gameDetails?.status === 'completed'
+    ) return;
+
+    const sourceScores = teamSide === 'us' ? scoreboard : opponentScoreboard;
+    const currentRuns = getCurrentInningRuns(sourceScores, inning);
+    const nextRuns = Math.max(0, currentRuns + delta);
+
+    if (nextRuns === currentRuns) return;
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/inning-scores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          game_id: currentGameId,
+          inning,
+          team_side: teamSide,
+          runs: nextRuns,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to adjust inning score');
+      }
+
+      await Promise.all([
+        fetchScoreboard(currentGameId),
+        fetchGamesList(),
+      ]);
+    } catch (e) {
+      setError('得点の手動修正に失敗しました');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleSaveOpponentHalf = async () => {
     if (
       !currentGameId ||
@@ -950,6 +1003,9 @@ if (
                   inningHalf={inningHalf}
                   outs={outs}
                   setOuts={setOuts}
+                  currentRunsUs={getCurrentInningRuns(scoreboard, inning)}
+                  currentRunsThem={getCurrentInningRuns(opponentScoreboard, inning)}
+                  onManualScoreAdjust={handleManualScoreAdjust}
                   bases={bases}
                   setBases={setBases}
                   battingOrder={battingOrder}

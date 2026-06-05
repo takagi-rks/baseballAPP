@@ -6,6 +6,9 @@ interface ScoreInputPanelProps {
   inningHalf: 'TOP' | 'BOTTOM';
   outs: number;
   setOuts: (value: number) => void;
+  currentRunsUs: number;
+  currentRunsThem: number;
+  onManualScoreAdjust: (teamSide: 'us' | 'them', delta: number) => void;
   bases: { [key: number]: boolean };
   setBases: (bases: { [key: number]: boolean }) => void;
   battingOrder: number;
@@ -24,7 +27,7 @@ interface ScoreInputPanelProps {
 }
 
 export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
-  inning, inningHalf, outs, setOuts, bases, setBases,
+  inning, inningHalf, outs, setOuts, currentRunsUs, currentRunsThem, onManualScoreAdjust, bases, setBases,
   battingOrder, selectedPlayer, onPlayerChange, players,
   rbi, setRbi, runs, setRuns,
   onResultTap, onUndo, lastInsertedId,
@@ -92,6 +95,62 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
               <div className={`absolute top-1/2 right-0 w-2.5 h-2.5 border border-gray-600 -translate-y-1/2 translate-x-1/2 ${bases[1] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
               <div className={`absolute top-0 left-1/2 w-2.5 h-2.5 border border-gray-600 -translate-x-1/2 -translate-y-1/2 ${bases[2] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
               <div className={`absolute top-1/2 left-0 w-2.5 h-2.5 border border-gray-600 -translate-y-1/2 -translate-x-1/2 ${bases[3] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Manual Score Control */}
+      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-3 shadow-lg">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-[10px] text-gray-400 font-black uppercase tracking-widest">得点手動修正</h3>
+          <span className="text-[9px] text-gray-600">現在イニング</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          <div className="bg-gray-950/60 border border-gray-800 rounded-xl p-2">
+            <div className="text-[9px] text-blue-300 font-black mb-1 text-center">自チーム</div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => onManualScoreAdjust('us', -1)}
+                disabled={isProcessing || currentRunsUs <= 0}
+                className="w-8 h-8 rounded-full bg-gray-800 text-white font-black disabled:opacity-30 active:scale-95"
+              >
+                -
+              </button>
+              <span className="w-6 text-center text-lg font-black text-white">{currentRunsUs}</span>
+              <button
+                type="button"
+                onClick={() => onManualScoreAdjust('us', 1)}
+                disabled={isProcessing}
+                className="w-8 h-8 rounded-full bg-gray-800 text-white font-black disabled:opacity-30 active:scale-95"
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-gray-950/60 border border-gray-800 rounded-xl p-2">
+            <div className="text-[9px] text-red-300 font-black mb-1 text-center">相手</div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => onManualScoreAdjust('them', -1)}
+                disabled={isProcessing || currentRunsThem <= 0}
+                className="w-8 h-8 rounded-full bg-gray-800 text-white font-black disabled:opacity-30 active:scale-95"
+              >
+                -
+              </button>
+              <span className="w-6 text-center text-lg font-black text-white">{currentRunsThem}</span>
+              <button
+                type="button"
+                onClick={() => onManualScoreAdjust('them', 1)}
+                disabled={isProcessing}
+                className="w-8 h-8 rounded-full bg-gray-800 text-white font-black disabled:opacity-30 active:scale-95"
+              >
+                +
+              </button>
             </div>
           </div>
         </div>
