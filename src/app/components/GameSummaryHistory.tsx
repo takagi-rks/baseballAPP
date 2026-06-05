@@ -72,6 +72,7 @@ export const GameSummaryHistory: React.FC = () => {
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <div className="text-[11px] font-black text-white truncate">
+                    {game.score_us > game.score_them ? '○ ' : game.score_us < game.score_them ? '● ' : '△ '}
                     vs {game.opponent || '練習試合'}
                   </div>
                   <div className="text-[9px] text-gray-500 truncate">

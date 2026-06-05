@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     rbi,
     runs,
     stolen_bases,
+    risp,
   } = body;
 
   if (!game_id || !player_id || !inning || !result_category || !result_detail) {
@@ -48,9 +49,9 @@ export async function POST(request: NextRequest) {
       INSERT INTO plate_appearances (
         team_id, game_id, player_id, inning, inning_half,
         result_category, result_detail, rbi, runs, stolen_bases,
-        is_at_bat, is_hit, slugging_value
+        is_at_bat, is_hit, slugging_value, risp
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING id;
     `;
     const paValues = [
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
       inning_half ?? 'TOP',
       result_category, result_detail,
       rbi ?? 0, runs ?? 0, stolen_bases ?? 0,
-      isAtBat, isHit, slugging_value,
+      isAtBat, isHit, slugging_value, Boolean(risp),
     ];
     const paResult = await pool.query(paQuery, paValues);
 

@@ -27,6 +27,8 @@ import { GameTimeline } from './components/GameTimeline';
 import { GameStatsTable } from './components/GameStatsTable';
 import { CareerStatsTable } from './components/CareerStatsTable';
 import { GameSummaryHistory } from './components/GameSummaryHistory';
+import { BattingAverageTop5 } from './components/BattingAverageTop5';
+import { MonthlyStats } from './components/MonthlyStats';
 
 export default function QuickScoreInput() {
   // --- States ---
@@ -1091,6 +1093,10 @@ if (
         {activeTab === 'stats' && (
           <div className="space-y-3">
             <GameSummaryHistory />
+
+            <BattingAverageTop5 />
+
+            <MonthlyStats />
 
             <CareerStatsTable />
 

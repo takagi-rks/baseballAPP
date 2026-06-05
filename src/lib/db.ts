@@ -77,6 +77,7 @@ export async function initDb() {
     `ALTER TABLE games ADD COLUMN IF NOT EXISTS batting_side VARCHAR(10) DEFAULT 'TOP';`,
     `ALTER TABLE games ADD COLUMN IF NOT EXISTS tournament_name VARCHAR(100);`,
     `ALTER TABLE plate_appearances ADD COLUMN IF NOT EXISTS inning_half VARCHAR(10) DEFAULT 'TOP';`,
+    `ALTER TABLE plate_appearances ADD COLUMN IF NOT EXISTS risp BOOLEAN DEFAULT false;`,
     `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS hits_allowed INTEGER DEFAULT 0;`,
     `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS walks_allowed INTEGER DEFAULT 0;`,
     `ALTER TABLE inning_scores ADD COLUMN IF NOT EXISTS hit_by_pitch_allowed INTEGER DEFAULT 0;`,
