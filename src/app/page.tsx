@@ -26,6 +26,7 @@ import { PlayerManager } from './components/PlayerManager';
 import { GameTimeline } from './components/GameTimeline';
 import { CareerStatsTable } from './components/CareerStatsTable';
 import { GameSummaryCard } from './components/GameSummaryCard';
+import { GameSummaryHistory } from './components/GameSummaryHistory';
 
 export default function QuickScoreInput() {
   // --- States ---
@@ -1163,6 +1164,8 @@ if (
               playerStats={playerStats}
               players={players}
             />
+
+            <GameSummaryHistory />
 
             <CareerStatsTable />
 
