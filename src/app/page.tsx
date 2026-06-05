@@ -117,7 +117,7 @@ export default function QuickScoreInput() {
       setPlayers(players);
       if (players.length > 0 && !selectedPlayer) {
         setSelectedPlayer(String(players[0].id));
-        setBattingOrder(players[0].batting_orderrr);
+        setBattingOrder(players[0].batting_order);
       }
     } catch (e) {
       setError('選手一覧の取得に失敗しました');
@@ -346,7 +346,7 @@ if (
         if (currentIndex !== -1 && activePlayers.length > 0) {
           const nextIndex = (currentIndex + 1) % activePlayers.length;
           const nextPlayer = activePlayers[nextIndex];
-          setBattingOrder(nextPlayer.batting_orderrr);
+          setBattingOrder(nextPlayer.batting_order);
           setSelectedPlayer(String(nextPlayer.id));
         }
 
@@ -556,11 +556,11 @@ if (
   const saveNewGameLineup = async () => {
     const entries = Object.entries(newGameLineup)
       .map(([order, playerId]) => ({
-        batting_orderrr: Number(order),
+        batting_order: Number(order),
         player_id: Number(playerId),
       }))
       .filter((entry) => entry.player_id > 0)
-      .sort((a, b) => a.batting_orderrr - b.batting_orderrr);
+      .sort((a, b) => a.batting_order - b.batting_order);
 
     const usedPlayerIds = new Set<number>();
 
@@ -578,7 +578,7 @@ if (
           name: player.name,
           uniform_number: player.uniform_number,
           position: player.position,
-          batting_orderrr: entry.batting_orderrr,
+          batting_order: entry.batting_order,
           is_active: true,
         }),
       });
@@ -756,22 +756,22 @@ if (
 
       const selectedLineup = Object.entries(newGameLineup)
         .map(([order, playerId]) => ({
-          batting_orderrr: Number(order),
+          batting_order: Number(order),
           player_id: Number(playerId),
         }))
         .filter((entry) => entry.player_id > 0)
-        .sort((a, b) => a.batting_orderrr - b.batting_orderrr)
+        .sort((a, b) => a.batting_order - b.batting_order)
         .map((entry) => {
           const player = latestPlayers.find((p: Player) => p.id === entry.player_id);
-          return player ? { ...player, batting_orderrr: entry.batting_orderrr } : null;
+          return player ? { ...player, batting_order: entry.batting_order } : null;
         })
         .filter(Boolean) as Player[];
 
       const orderedPlayers = selectedLineup.length > 0
         ? selectedLineup
         : [...latestPlayers]
-            .filter((p) => p && p.batting_orderrr)
-            .sort((a, b) => (a.batting_orderrr || 999) - (b.batting_orderrr || 999));
+            .filter((p) => p && p.batting_order)
+            .sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999));
 
       setGamePlayers(orderedPlayers);
 
@@ -781,7 +781,7 @@ if (
         setCurrentGameId(gid);
 
         if (orderedPlayers.length > 0) {
-          setBattingOrder(orderedPlayers[0].batting_orderrr || 1);
+          setBattingOrder(orderedPlayers[0].batting_order || 1);
           setSelectedPlayer(String(orderedPlayers[0].id));
         } else {
           setBattingOrder(1);
@@ -834,7 +834,7 @@ if (
           name: newPlayerName,
           uniform_number: newPlayerNumber,
           position: newPlayerPos,
-          batting_orderrr: newPlayerOrder
+          batting_order: newPlayerOrder
         }),
       });
       if (response.ok) {
@@ -859,7 +859,7 @@ if (
           name: editPlayerName,
           uniform_number: editPlayerNumber,
           position: editPlayerPos,
-          batting_orderrr: editPlayerOrder
+          batting_order: editPlayerOrder
         }),
       });
       if (resp.ok) {
@@ -885,7 +885,7 @@ if (
     setEditPlayerName(player.name);
     setEditPlayerNumber(String(player.uniform_number));
     setEditPlayerPos(player.position || "");
-    setEditPlayerOrder(String(player.batting_orderrr));
+    setEditPlayerOrder(String(player.batting_order));
   };
 
   const handleExportCSV = () => {
@@ -906,8 +906,8 @@ if (
   if (isInitialLoading) {
     return (
       <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center space-y-3">
-        <div className="w-16 h-16 border-4 border-blue-600/30 border-t-blue-500 rounded-full animate-spin"></div>
-        <p className="text-gray-400 font-black tracking-widest text-xs uppercase animate-pulse">Initializing System...</p>
+        <div className="w-10 h-10 border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
+        <p className="text-gray-400 text-xs">読み込み中...</p>
       </div>
     );
   }
@@ -916,25 +916,24 @@ if (
     <div className="min-h-screen bg-gray-950 text-white font-sans p-2 pb-28 max-w-md mx-auto relative overflow-x-hidden">
       {/* Network Processing Indicator */}
       {isProcessing && (
-        <div className="fixed top-0 left-0 w-full h-1 bg-blue-600/20 z-50 overflow-hidden">
-          <div className="h-full bg-blue-500 w-1/3 animate-[loading_1s_infinite_linear]"></div>
+        <div className="fixed top-0 left-0 w-full h-0.5 bg-blue-50 z-50 overflow-hidden">
+          <div className="h-full bg-blue-600 w-1/3 animate-[loading_1s_infinite_linear]"></div>
         </div>
       )}
 
       {/* Error Toast */}
       {error && (
-        <div className="fixed bottom-20 left-4 right-4 bg-red-600 text-white p-3 rounded-xl shadow-2xl z-50 text-xs font-black flex justify-between items-center animate-bounce">
+        <div className="fixed bottom-20 left-4 right-4 bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl shadow z-50 text-xs font-semibold flex justify-between items-center">
           <span>⚠️ {error}</span>
           <button onClick={() => setError(null)} className="opacity-50">✕</button>
         </div>
       )}
 
-      <header className="py-6 flex justify-between items-end">
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center sticky top-0 z-30">
         <div>
-          <h1 className="text-3xl font-black italic tracking-tighter leading-none">
-            SCORE<span className="text-blue-500">PRO</span>
+          <h1 className="text-base font-bold text-gray-900 tracking-tight">
+            ONE <span className="text-blue-600">Baseball</span>
           </h1>
-          <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.3em] mt-1">Baseball Intelligence</p>
         </div>
         <div className="text-right flex flex-col items-end gap-1.5">
           <span className="text-[8px] text-gray-600 font-black uppercase">
@@ -985,7 +984,7 @@ if (
                     setSelectedPlayer(pid);
                     const activePlayers = gamePlayers.length > 0 ? gamePlayers : players;
                     const p = activePlayers.find(x => x.id === parseInt(pid));
-                    if (p) setBattingOrder(p.batting_orderrr);
+                    if (p) setBattingOrder(p.batting_order);
                   }}
                   players={gamePlayers.length > 0 ? gamePlayers : players}
                   rbi={rbi} setRbi={setRbi}
@@ -1077,7 +1076,7 @@ if (
         )}
 
         {activeTab === 'score' && (
-          <div className="space-y-3">
+          <div className="space-y-0">
             <Scoreboard scores={scoreboard} opponentScores={opponentScoreboard} battingSide={gameDetails?.batting_side || 'TOP'} />
             <GameStatsTable
               games={gamesList}
@@ -1388,30 +1387,30 @@ if (
       </main>
 
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-gray-950/90 backdrop-blur-md border-t border-gray-900/80 flex justify-around py-3 px-2 pb-5 z-40 shadow-[0_-8px_30px_rgba(0,0,0,0.7)]">
+      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-200 flex justify-around py-2 px-2 pb-5 z-40">
         {[
           { id: 'breaking', label: '入力', icon: (active: boolean) => (
-            <svg className={`w-5 h-5 ${active ? 'text-blue-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           )},
           { id: 'score', label: 'スコア', icon: (active: boolean) => (
-            <svg className={`w-5 h-5 ${active ? 'text-blue-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           )},
           { id: 'stats', label: '成績', icon: (active: boolean) => (
-            <svg className={`w-5 h-5 ${active ? 'text-blue-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h2m10 4a2 2 0 100-4h-2M7 12v9m10-9v9" />
             </svg>
           )},
           { id: 'players', label: '選手', icon: (active: boolean) => (
-            <svg className={`w-5 h-5 ${active ? 'text-blue-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           )},
           { id: 'gameInfo', label: '試合情報', icon: (active: boolean) => (
-            <svg className={`w-5 h-5 ${active ? 'text-blue-500' : 'text-gray-500'}`} fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+            <svg className={`w-5 h-5 ${active ? 'text-blue-600' : 'text-gray-400'}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           )},
@@ -1423,10 +1422,10 @@ if (
               onClick={() => setActiveTab(tab.id as any)}
               className="flex flex-col items-center justify-center flex-1 py-1 text-center transition-all duration-200"
             >
-              <div className={`p-1.5 mb-1 rounded-xl transition-colors duration-200 ${active ? 'bg-blue-500/10' : 'active:bg-gray-900/50'}`}>
+              <div className={`p-1.5 mb-1 rounded-xl transition-colors duration-200 ${active ? 'bg-blue-50' : 'active:bg-gray-100'}`}>
                 {tab.icon(active)}
               </div>
-              <span className={`text-[9px] font-black tracking-widest transition-colors duration-200 ${active ? 'text-blue-400' : 'text-gray-500'}`}>
+              <span className={`text-[9px] font-medium transition-colors duration-200 ${active ? 'text-blue-600 font-semibold' : 'text-gray-400'}`}>
                 {tab.label}
               </span>
             </button>
