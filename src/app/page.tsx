@@ -928,7 +928,7 @@ export default function QuickScoreInput() {
 
         {activeTab === 'score' && (
           <div className="space-y-6">
-            <Scoreboard scores={scoreboard} />
+            <Scoreboard scores={scoreboard} opponentScores={opponentScoreboard} battingSide={gameDetails?.batting_side || 'TOP'} />
             <GameTimeline timeline={timelineData} />
           </div>
         )}
