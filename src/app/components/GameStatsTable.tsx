@@ -67,6 +67,7 @@ export const GameStatsTable: React.FC<GameStatsTableProps> = ({
 
   return (
     <div className="bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden">
+      {/* ヘッダー：試合選択プルダウン */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-gray-800 bg-gray-900/60">
         <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">
           打者成績
@@ -80,17 +81,18 @@ export const GameStatsTable: React.FC<GameStatsTableProps> = ({
             <option key={g.id} value={g.id}>
               {g.opponent || '練習試合'}
               {g.game_date
-                ? `\u3000${new Date(g.game_date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' })}`
-                : `\u3000#${g.id}`}
-              {g.status === 'completed' ? '\u3000\u2713' : '\u3000\u25cf'}
+                ? `　${new Date(g.game_date).toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' })}`
+                : `　#${g.id}`}
+              {g.status === 'completed' ? '　✓' : '　●'}
             </option>
           ))}
         </select>
       </div>
 
+      {/* 試合情報サブヘッダー */}
       {selectedGame && (
         <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-950/40 border-b border-gray-800/50 text-[10px] text-gray-500">
-          <span>\uD83C\uDFDF\uFE0F {selectedGame.location || '球場未設定'}</span>
+          <span>🏟️ {selectedGame.location || '球場未設定'}</span>
           <span className={`px-1.5 py-0.5 rounded border text-[9px] font-black uppercase ${
             selectedGame.status === 'completed'
               ? 'border-gray-700 text-gray-600'
@@ -101,23 +103,24 @@ export const GameStatsTable: React.FC<GameStatsTableProps> = ({
         </div>
       )}
 
+      {/* テーブル */}
       {loading ? (
-        <div className="py-8 text-center text-[11px] text-gray-600">\u8AAD\u307F\u8FBC\u307F\u4E2D...</div>
+        <div className="py-8 text-center text-[11px] text-gray-600">読み込み中...</div>
       ) : sortedStats.length === 0 ? (
         <div className="py-8 text-center text-[11px] text-gray-600 italic">
-          \u3053\u306E\u8A66\u5408\u306E\u6253\u5E2D\u30C7\u30FC\u30BF\u306F\u3042\u308A\u307E\u305B\u3093
+          この試合の打席データはありません
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-[11px]">
             <thead>
               <tr className="bg-gray-800/40 text-gray-500 font-black uppercase tracking-wider border-b border-gray-800">
-                <th className="text-left px-3 py-2 w-[40%]">\u9078\u624B</th>
-                <th className="text-center px-1 py-2">\u6253\u5E2D</th>
-                <th className="text-center px-1 py-2">\u5B89\u6253</th>
-                <th className="text-center px-1 py-2">\u6253\u70B9</th>
-                <th className="text-center px-1 py-2">\u5F97\u70B9</th>
-                <th className="text-center px-1 py-2">\u6253\u7387</th>
+                <th className="text-left px-3 py-2 w-[40%]">選手</th>
+                <th className="text-center px-1 py-2">打席</th>
+                <th className="text-center px-1 py-2">安打</th>
+                <th className="text-center px-1 py-2">打点</th>
+                <th className="text-center px-1 py-2">得点</th>
+                <th className="text-center px-1 py-2">打率</th>
                 <th className="text-center px-2 py-2">OPS</th>
               </tr>
             </thead>
@@ -142,7 +145,7 @@ export const GameStatsTable: React.FC<GameStatsTableProps> = ({
                             #{player?.uniform_number ?? '?'}
                           </span>
                           <span className="font-bold text-gray-100 truncate">
-                            {player?.name ?? '\u4E0D\u660E'}
+                            {player?.name ?? '不明'}
                           </span>
                         </div>
                       </div>
@@ -175,7 +178,7 @@ export const GameStatsTable: React.FC<GameStatsTableProps> = ({
             </tbody>
             <tfoot>
               <tr className="border-t border-gray-700 bg-gray-800/30 text-gray-400 font-black text-[10px]">
-                <td className="px-3 py-2 text-gray-500 uppercase tracking-wider">\u5408\u8A08</td>
+                <td className="px-3 py-2 text-gray-500 uppercase tracking-wider">合計</td>
                 <td className="text-center px-1 py-2 font-mono">
                   {sortedStats.reduce((s, r) => s + Number(r.pa), 0)}
                 </td>
@@ -188,8 +191,8 @@ export const GameStatsTable: React.FC<GameStatsTableProps> = ({
                 <td className="text-center px-1 py-2 font-mono text-green-400">
                   {sortedStats.reduce((s, r) => s + Number(r.runs), 0)}
                 </td>
-                <td className="text-center px-1 py-2 text-gray-600">\u2014</td>
-                <td className="text-center px-2 py-2 text-gray-600">\u2014</td>
+                <td className="text-center px-1 py-2 text-gray-600">—</td>
+                <td className="text-center px-2 py-2 text-gray-600">—</td>
               </tr>
             </tfoot>
           </table>
