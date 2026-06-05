@@ -25,13 +25,13 @@ export const GameInfoForm: React.FC<GameInfoFormProps> = ({
   isProcessing
 }) => {
   return (
-    <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-4 mb-6 shadow-lg">
+    <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-2 mb-6 shadow-lg">
       <h2 className="text-gray-400 text-[10px] font-bold mb-3 uppercase tracking-widest flex items-center">
         <span className="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2"></span>
         試合情報
       </h2>
       
-      <div className="grid grid-cols-2 gap-4 mb-4 text-xs">
+      <div className="grid grid-cols-2 gap-2 mb-4 text-xs">
         <div className="col-span-2">
           <label className="block text-gray-500 mb-1">対戦相手</label>
           <input 

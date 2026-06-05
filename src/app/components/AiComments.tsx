@@ -14,7 +14,7 @@ export const AiComments: React.FC<AiCommentsProps> = ({ comments }) => {
       </h2>
       <div className="grid grid-cols-1 gap-3">
         {comments.map((comment) => (
-          <div key={comment.player_id} className={`p-4 rounded-2xl border transition-all shadow-md ${
+          <div key={comment.player_id} className={`p-2 rounded-2xl border transition-all shadow-md ${
             comment.mood === 'great' ? 'bg-amber-500/10 border-amber-500/30' :
             comment.mood === 'good' ? 'bg-blue-500/10 border-blue-500/30' :
             'bg-gray-800/20 border-gray-700/50'

@@ -32,7 +32,7 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
   };
 
   return (
-    <div className="mt-8 bg-gray-950/40 rounded-3xl p-5 border border-gray-900/50 shadow-2xl">
+    <div className="mt-8 bg-gray-950/40 rounded-3xl p-3 border border-gray-900/50 shadow-2xl">
       <h2 className="text-gray-400 text-[10px] font-bold mb-6 uppercase tracking-[0.2em] flex items-center">
         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
         試合経過タイムライン
@@ -58,7 +58,7 @@ export const GameTimeline: React.FC<GameTimelineProps> = ({ timeline }) => {
                   return (
                     <div
                       key={event.id}
-                      className={`relative bg-gray-900/50 border rounded-2xl p-4 transition-all duration-200 shadow-md hover:scale-[1.01] ${
+                      className={`relative bg-gray-900/50 border rounded-2xl p-2 transition-all duration-200 shadow-md hover:scale-[1.01] ${
                         hasPoints
                           ? 'border-red-500/40 bg-gradient-to-r from-red-950/10 to-gray-900/50 shadow-[0_0_15px_rgba(239,68,68,0.07)]'
                           : isHomeRun

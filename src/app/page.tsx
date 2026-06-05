@@ -864,7 +864,7 @@ if (
 
   if (isInitialLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center space-y-6">
+      <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center space-y-3">
         <div className="w-16 h-16 border-4 border-blue-600/30 border-t-blue-500 rounded-full animate-spin"></div>
         <p className="text-gray-400 font-black tracking-widest text-xs uppercase animate-pulse">Initializing System...</p>
       </div>
@@ -872,7 +872,7 @@ if (
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white font-sans p-4 pb-28 max-w-md mx-auto relative overflow-x-hidden">
+    <div className="min-h-screen bg-gray-950 text-white font-sans p-2 pb-28 max-w-md mx-auto relative overflow-x-hidden">
       {/* Network Processing Indicator */}
       {isProcessing && (
         <div className="fixed top-0 left-0 w-full h-1 bg-blue-600/20 z-50 overflow-hidden">
@@ -903,7 +903,7 @@ if (
 
       {/* Mini Game Status Board */}
       {gameDetails && (
-        <div className="bg-blue-950/20 border border-blue-900/40 rounded-2xl p-4 mb-6 flex items-center justify-between shadow-lg">
+        <div className="bg-blue-950/20 border border-blue-900/40 rounded-2xl p-2 mb-6 flex items-center justify-between shadow-lg">
           <div className="flex flex-col">
             <span className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">VS {gameDetails.opponent || "対戦相手なし"}</span>
             <span className="text-[10px] text-gray-500 font-semibold mt-0.5">🏟️ {gameDetails.location || "球場未設定"}</span>
@@ -928,7 +928,7 @@ if (
 
       {/* Game Summary */}
       {gameDetails && activeTab !== 'breaking' && (
-        <div className="bg-gray-900/70 border border-gray-800 rounded-2xl p-4 mb-6 shadow-lg">
+        <div className="bg-gray-900/70 border border-gray-800 rounded-2xl p-2 mb-6 shadow-lg">
           <div className="flex items-center justify-between mb-3">
             <div>
               <div className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">Game Summary</div>
@@ -979,9 +979,9 @@ if (
       )}
 
       {/* Main Tab Content */}
-      <main className="space-y-6">
+      <main className="space-y-3">
         {activeTab === 'breaking' && (
-          <div className="space-y-6">
+          <div className="space-y-3">
             <Scoreboard
               scores={scoreboard}
               opponentScores={opponentScoreboard}
@@ -1035,7 +1035,7 @@ if (
                 />
               </>
             ) : (
-              <div className="bg-gray-900/70 border border-red-500/20 rounded-3xl p-5 shadow-2xl space-y-5">
+              <div className="bg-gray-900/70 border border-red-500/20 rounded-3xl p-3 shadow-2xl space-y-5">
                 <div>
                   <div className="text-[10px] text-red-400 font-black uppercase tracking-[0.25em] mb-2">
                     相手攻撃入力
@@ -1097,7 +1097,7 @@ if (
                   type="button"
                   onClick={handleSaveOpponentHalf}
                   disabled={isProcessing || gameDetails?.status === 'completed'}
-                  className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-2xl active:scale-[0.98] disabled:opacity-50"
+                  className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-2 rounded-2xl active:scale-[0.98] disabled:opacity-50"
                 >
                   相手攻撃を保存して次へ
                 </button>
@@ -1107,14 +1107,14 @@ if (
         )}
 
         {activeTab === 'score' && (
-          <div className="space-y-6">
+          <div className="space-y-3">
             <Scoreboard scores={scoreboard} opponentScores={opponentScoreboard} battingSide={gameDetails?.batting_side || 'TOP'} />
             <GameTimeline timeline={timelineData} />
           </div>
         )}
 
         {activeTab === 'stats' && (
-          <div className="space-y-6">
+          <div className="space-y-3">
             <GameSummaryCard
               gameDetails={gameDetails}
               scoreboard={scoreboard}
@@ -1126,12 +1126,12 @@ if (
             <CareerStatsTable />
 
             {/* Quick CSV Export Panel */}
-            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-5 flex flex-col items-center justify-between shadow-lg">
+            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-3 flex flex-col items-center justify-between shadow-lg">
               <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-3">CSVデータエクスポート</span>
               <button 
                 onClick={handleExportCSV}
                 disabled={isProcessing || playerStats.length === 0}
-                className="w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl shadow-lg active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale flex items-center justify-center space-x-2 text-xs"
+                className="w-full bg-green-600 hover:bg-green-500 text-white font-black py-2 rounded-xl shadow-lg active:scale-[0.98] transition-all disabled:opacity-30 disabled:grayscale flex items-center justify-center space-x-2 text-xs"
               >
                 <span>📥 個人成績CSVダウンロード</span>
               </button>
@@ -1148,7 +1148,7 @@ if (
         )}
 
         {activeTab === 'players' && (
-          <div className="space-y-6">
+          <div className="space-y-3">
             <PlayerManager 
               players={players}
               newPlayerName={newPlayerName} setNewPlayerName={setNewPlayerName}
@@ -1170,8 +1170,8 @@ if (
         )}
 
         {activeTab === 'gameInfo' && (
-          <div className="space-y-6">
-            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-5 shadow-lg">
+          <div className="space-y-3">
+            <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-3 shadow-lg">
               <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
                   <h2 className="text-sm font-black text-gray-100">新規試合作成</h2>
@@ -1197,7 +1197,7 @@ if (
 
               {isCreatingGame && (
                 <div className="space-y-5">
-                  <div className="grid grid-cols-3 gap-2 text-center text-[10px] font-black">
+                  <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-black">
                     {[1, 2, 3].map((step) => (
                       <div
                         key={step}
@@ -1214,7 +1214,7 @@ if (
 
                   {newGameStep === 1 && (
                     <div className="space-y-4">
-                      <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-4">
+                      <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-2">
                         <h3 className="text-sm font-black text-white mb-2">新しい試合を開始します</h3>
                         <p className="text-xs text-gray-500 leading-relaxed">
                           次のステップで打順を選び、その後に対戦相手・球場などを入力します。
@@ -1320,7 +1320,7 @@ if (
                         <p className="text-[11px] text-gray-500 mt-1">対戦相手・球場などを入力して試合を開始します。</p>
                       </div>
 
-                      <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-4">
+                      <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-2">
                         <h4 className="text-xs font-black text-gray-300 mb-3">先攻/後攻</h4>
                         <div className="grid grid-cols-2 gap-3">
                           <button
@@ -1400,7 +1400,7 @@ if (
                 isProcessing ||
                 gameDetails?.status === 'completed'
               }
-              className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl disabled:opacity-50 mb-4"
+              className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-2 rounded-xl disabled:opacity-50 mb-4"
             >
               {gameDetails?.status === 'completed'
                 ? '試合終了済み'

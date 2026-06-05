@@ -17,7 +17,7 @@ export const GameList: React.FC<GameListProps> = ({
   isProcessing
 }) => {
   return (
-    <div className="mt-12 mb-8 bg-gray-800/10 rounded-2xl p-5 border border-gray-700/30">
+    <div className="mt-12 mb-8 bg-gray-800/10 rounded-2xl p-3 border border-gray-700/30">
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-gray-400 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center">
           <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mr-2"></span>
@@ -32,9 +32,9 @@ export const GameList: React.FC<GameListProps> = ({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-2">
         {games.map((game) => (
-          <div key={game.id} className={`p-4 rounded-2xl border transition-all shadow-md ${currentGameId === game.id ? 'bg-blue-600/10 border-blue-500/50 ring-1 ring-blue-500/50' : 'bg-gray-900/40 border-gray-700/50 hover:border-gray-600'}`}>
+          <div key={game.id} className={`p-2 rounded-2xl border transition-all shadow-md ${currentGameId === game.id ? 'bg-blue-600/10 border-blue-500/50 ring-1 ring-blue-500/50' : 'bg-gray-900/40 border-gray-700/50 hover:border-gray-600'}`}>
             <div className="flex justify-between items-start mb-3">
               <div>
                 <span className="text-[10px] font-mono text-gray-500 tracking-tighter">GID:{String(game.id).padStart(4, '0')}</span>

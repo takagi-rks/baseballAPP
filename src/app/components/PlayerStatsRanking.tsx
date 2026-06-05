@@ -47,19 +47,19 @@ export const PlayerStatsRanking: React.FC<PlayerStatsRankingProps> = ({
                 const player = players.find(p => String(p.id) === String(stat.player_id));
                 return (
                   <tr key={stat.player_id} className={`border-b border-gray-700/30 transition-colors hover:bg-white/5 ${index === 0 ? 'bg-amber-500/5' : ''}`}>
-                    <td className="px-4 py-4 font-mono font-bold text-gray-500">
+                    <td className="px-4 py-2 font-mono font-bold text-gray-500">
                       {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`}
                     </td>
-                    <td className="px-2 py-4">
+                    <td className="px-2 py-2">
                       <div className="flex flex-col">
                         <span className="font-bold text-gray-100">{player?.name || '不明'}</span>
                         <span className="text-[9px] text-gray-500 leading-tight">{stat.pa}打席 {stat.h}安打 {stat.rbi}打点</span>
                       </div>
                     </td>
-                    <td className="px-2 py-4 text-center font-mono text-gray-300">
+                    <td className="px-2 py-2 text-center font-mono text-gray-300">
                       <span className={parseFloat(stat.avg) >= 0.3 ? 'text-green-400 font-bold' : ''}>{stat.avg}</span>
                     </td>
-                    <td className="px-4 py-4 text-right">
+                    <td className="px-4 py-2 text-right">
                       <span className={`font-mono font-black text-sm ${parseFloat(stat.ops) >= 1.0 ? 'text-amber-400' : parseFloat(stat.ops) >= 0.8 ? 'text-blue-400' : 'text-gray-200'}`}>
                         {stat.ops}
                       </span>

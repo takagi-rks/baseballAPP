@@ -177,13 +177,13 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
       </div>
 
       {/* Manual Runner Control */}
-      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-4 shadow-lg">
+      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-2 shadow-lg">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs text-gray-400 font-black uppercase tracking-widest">ランナー手動調整</h3>
           <span className="text-[10px] text-gray-600">塁をタップでON/OFF</span>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {[1, 2, 3].map((base) => {
             const label = base === 1 ? '一塁' : base === 2 ? '二塁' : '三塁';
             const active = Boolean(bases[base]);
@@ -233,14 +233,14 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
       </div>
 
       {/* Batting Order List */}
-      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-4 shadow-lg">
+      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-2 shadow-lg">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs text-gray-400 font-black uppercase tracking-widest">打順一覧</h3>
           <span className="text-[10px] text-gray-600">現在打者を青で表示</span>
         </div>
 
         {orderedPlayers.length === 0 ? (
-          <div className="text-center text-gray-600 text-xs py-4 border border-dashed border-gray-800 rounded-xl">
+          <div className="text-center text-gray-600 text-xs py-2 border border-dashed border-gray-800 rounded-xl">
             選手が登録されていません
           </div>
         ) : (
@@ -343,7 +343,7 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
         <button
           onClick={onUndo}
           disabled={!lastInsertedId || isProcessing}
-          className={`w-full py-4 rounded-2xl font-black text-sm border transition-all shadow-lg ${
+          className={`w-full py-2 rounded-2xl font-black text-sm border transition-all shadow-lg ${
             lastInsertedId && !isProcessing
               ? 'border-red-500/50 text-red-400 bg-red-500/10 active:scale-[0.98]' 
               : 'border-gray-800 text-gray-700 bg-gray-900 cursor-not-allowed opacity-50'

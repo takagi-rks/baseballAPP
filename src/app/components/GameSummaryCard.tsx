@@ -99,7 +99,7 @@ export const GameSummaryCard: React.FC<GameSummaryCardProps> = ({
     : null;
 
   return (
-    <div className="bg-gray-900/70 border border-gray-800 rounded-3xl p-5 shadow-2xl">
+    <div className="bg-gray-900/70 border border-gray-800 rounded-3xl p-3 shadow-2xl">
       <div className="flex items-start justify-between mb-5">
         <div>
           <div className="text-[10px] text-gray-500 font-black uppercase tracking-[0.25em]">
@@ -124,7 +124,7 @@ export const GameSummaryCard: React.FC<GameSummaryCardProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-4 gap-2 mb-4">
         <div className="bg-gray-950/60 border border-gray-800 rounded-2xl p-3 text-center">
           <div className="text-[9px] text-gray-500 font-black mb-1">安打</div>
           <div className="text-xl font-black text-white">{totals.hits}</div>
@@ -159,7 +159,7 @@ export const GameSummaryCard: React.FC<GameSummaryCardProps> = ({
       </div>
 
       {mvp?.player && mvp.score > 0 && (
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4">
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-2">
           <div className="text-[10px] text-blue-300 font-black uppercase tracking-[0.2em] mb-1">
             MVP候補
           </div>

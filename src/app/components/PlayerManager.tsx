@@ -44,14 +44,14 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
   isProcessing
 }) => {
   return (
-    <div className="mt-12 mb-12 bg-gray-900/10 rounded-2xl p-5 border border-gray-700/30 shadow-inner">
+    <div className="mt-12 mb-12 bg-gray-900/10 rounded-2xl p-3 border border-gray-700/30 shadow-inner">
       <h2 className="text-gray-400 text-[10px] font-bold mb-5 uppercase tracking-[0.2em] flex items-center">
         <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-2"></span>
         選手管理
       </h2>
       
       {/* Add New Player */}
-      <div className="bg-gray-800/20 p-5 rounded-2xl mb-6 border border-gray-700/50 shadow-md">
+      <div className="bg-gray-800/20 p-3 rounded-2xl mb-6 border border-gray-700/50 shadow-md">
         <p className="text-[10px] text-gray-500 font-black mb-4 uppercase tracking-widest">選手を登録する</p>
         <div className="grid grid-cols-2 gap-3 mb-4">
           <input type="text" placeholder="名前" value={newPlayerName} onChange={(e) => setNewPlayerName(e.target.value)} disabled={isProcessing} className="bg-gray-900 border border-gray-700 rounded-xl p-3 text-xs text-white focus:border-blue-500 outline-none transition-all disabled:opacity-50" />
@@ -71,7 +71,7 @@ export const PlayerManager: React.FC<PlayerManagerProps> = ({
       {/* Player List */}
       <div className="space-y-3">
         {players.map((p) => (
-          <div key={p.id} className="bg-gray-900/40 p-4 rounded-2xl border border-gray-700/30 transition-all shadow-sm">
+          <div key={p.id} className="bg-gray-900/40 p-2 rounded-2xl border border-gray-700/30 transition-all shadow-sm">
             {editingPlayerId === p.id ? (
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
