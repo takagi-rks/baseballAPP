@@ -11,10 +11,20 @@ interface ScoreboardProps {
   battingSide?: 'TOP' | 'BOTTOM';
 }
 
-function getRun(scores: InningScore[] | undefined, inning: number): number | null {
+function getRun(
+  scores: InningScore[] | undefined,
+  inning: number,
+  maxInning: number
+): number | null {
   if (!Array.isArray(scores)) return null;
   const row = scores.find((s) => Number(s.inning) === inning);
-  return row ? Number(row.runs || 0) : null;
+  if (row) return Number(row.runs || 0);
+  return inning <= maxInning ? 0 : null;
+}
+
+function getMaxInning(scores: InningScore[] | undefined): number {
+  if (!Array.isArray(scores) || scores.length === 0) return 0;
+  return Math.max(...scores.map((s) => Number(s.inning)));
 }
 
 function totalRuns(scores: InningScore[] | undefined): number {
@@ -61,7 +71,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({
           </div>
 
           {[1, 2, 3, 4, 5, 6, 7].map((inning) => {
-            const run = getRun(row.scores, inning);
+            const run = getRun(row.scores, inning, getMaxInning(row.scores));
             return (
               <div
                 key={inning}

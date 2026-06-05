@@ -934,9 +934,24 @@ if (
           </h1>
           <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.3em] mt-1">Baseball Intelligence</p>
         </div>
-        <div className="text-right">
-          <span className="block text-[8px] text-gray-600 font-black uppercase">Session</span>
-          <span className="text-xs font-mono font-bold text-gray-400">ID-{String(currentGameId).padStart(4, '0')}</span>
+        <div className="text-right flex flex-col items-end gap-1.5">
+          <span className="text-[8px] text-gray-600 font-black uppercase">
+            Session <span className="text-gray-400">ID-{String(currentGameId).padStart(4, '0')}</span>
+          </span>
+          {gameDetails?.status === 'completed' ? (
+            <span className="text-[9px] font-black px-2 py-0.5 rounded border border-gray-700 text-gray-500 bg-gray-900/50 uppercase tracking-widest">
+              試合終了済み
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={handleFinishGame}
+              disabled={isProcessing}
+              className="text-[9px] font-black px-2 py-0.5 rounded border border-red-500/40 text-red-400 bg-red-500/10 hover:bg-red-500/20 active:scale-95 transition-all disabled:opacity-30"
+            >
+              試合終了
+            </button>
+          )}
         </div>
       </header>
 {/* Main Tab Content */}
