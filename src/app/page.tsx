@@ -801,6 +801,11 @@ if (
 
   const ourBattingSide = gameDetails?.batting_side || 'TOP';
   const isOurBatting = inningHalf === ourBattingSide;
+  const totalUs = Array.isArray(scoreboard) ? scoreboard.reduce((sum, row) => sum + Number(row.runs || 0), 0) : 0;
+  const totalThem = Array.isArray(opponentScoreboard) ? opponentScoreboard.reduce((sum, row) => sum + Number(row.runs || 0), 0) : 0;
+  const resultLabel = totalUs > totalThem ? '勝ち' : totalUs < totalThem ? '負け' : '同点';
+  const battingSideLabel = ourBattingSide === 'TOP' ? '先攻' : '後攻';
+  const currentPhaseLabel = isOurBatting ? '自攻撃' : '相手攻撃';
 
   if (isInitialLoading) {
     return (
@@ -862,6 +867,58 @@ if (
             }`}>
               {gameDetails.status === 'completed' ? 'FIN' : 'Live'}
             </span>
+          </div>
+        </div>
+      )}
+
+      {/* Game Summary */}
+      {gameDetails && (
+        <div className="bg-gray-900/70 border border-gray-800 rounded-2xl p-4 mb-6 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <div className="text-[10px] text-gray-500 font-black uppercase tracking-[0.2em]">Game Summary</div>
+              <div className="text-sm font-black text-gray-100 mt-1">
+                {gameDetails.opponent || '練習試合'}
+              </div>
+            </div>
+            <div className={`px-3 py-1 rounded-xl text-xs font-black border ${
+              gameDetails.status === 'completed'
+                ? 'bg-gray-800 text-gray-400 border-gray-700'
+                : 'bg-green-500/10 text-green-400 border-green-500/30'
+            }`}>
+              {gameDetails.status === 'completed' ? 'FIN' : 'LIVE'}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2 text-center">
+            <div className="bg-gray-950/50 border border-gray-800 rounded-xl p-3">
+              <div className="text-[9px] text-gray-500 font-black mb-1">SCORE</div>
+              <div className="text-lg font-black text-white">{totalUs} - {totalThem}</div>
+            </div>
+            <div className="bg-gray-950/50 border border-gray-800 rounded-xl p-3">
+              <div className="text-[9px] text-gray-500 font-black mb-1">RESULT</div>
+              <div className={`text-sm font-black ${
+                resultLabel === '勝ち' ? 'text-blue-400' : resultLabel === '負け' ? 'text-red-400' : 'text-gray-300'
+              }`}>
+                {resultLabel}
+              </div>
+            </div>
+            <div className="bg-gray-950/50 border border-gray-800 rounded-xl p-3">
+              <div className="text-[9px] text-gray-500 font-black mb-1">INNING</div>
+              <div className="text-sm font-black text-white">
+                {inning}回{inningHalf === 'TOP' ? '表' : '裏'}
+              </div>
+            </div>
+            <div className="bg-gray-950/50 border border-gray-800 rounded-xl p-3">
+              <div className="text-[9px] text-gray-500 font-black mb-1">SIDE</div>
+              <div className="text-sm font-black text-blue-300">
+                {battingSideLabel}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 text-[11px] text-gray-500 font-bold">
+            現在: {currentPhaseLabel} / 球場: {gameDetails.location || '未設定'}
           </div>
         </div>
       )}
