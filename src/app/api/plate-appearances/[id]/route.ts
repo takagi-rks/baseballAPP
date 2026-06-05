@@ -35,6 +35,60 @@ async function recalculateInningScore(gameId: number, inning: number) {
   }
 }
 
+export async function PUT(
+  request: Request,
+  context: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await context.params;
+    const { result_category, result_detail } = await request.json();
+
+    if (!result_category || !result_detail) {
+      return NextResponse.json(
+        { success: false, error: 'result_category and result_detail are required' },
+        { status: 400 }
+      );
+    }
+
+    const sluggingMap: Record<string, number> = {
+      SINGLE: 1, DOUBLE: 2, TRIPLE: 3, HOME_RUN: 4,
+    };
+    const isHit = ['SINGLE', 'DOUBLE', 'TRIPLE', 'HOME_RUN'].includes(result_detail);
+    const slugging_value = sluggingMap[result_detail] ?? 0;
+
+    const targetResult = await pool.query(
+      `SELECT game_id, inning FROM plate_appearances WHERE id = $1;`,
+      [id]
+    );
+
+    if (targetResult.rowCount === 0) {
+      return NextResponse.json(
+        { success: false, error: 'plate appearance not found' },
+        { status: 404 }
+      );
+    }
+
+    const { game_id, inning } = targetResult.rows[0];
+
+    await pool.query(
+      `UPDATE plate_appearances
+       SET result_category = $1,
+           result_detail   = $2,
+           is_hit          = $3,
+           slugging_value  = $4
+       WHERE id = $5;`,
+      [result_category, result_detail, isHit, slugging_value, id]
+    );
+
+    await recalculateInningScore(Number(game_id), Number(inning));
+
+    return NextResponse.json({ success: true });
+  } catch (error: any) {
+    console.error('Update PlateAppearance Error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
