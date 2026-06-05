@@ -272,7 +272,13 @@ export default function QuickScoreInput() {
   // --- Event Handlers ---
 
   const handleResultTap = async (option: any) => {
-    if (!currentGameId || isProcessing) return;
+    
+if (
+  !currentGameId ||
+  isProcessing ||
+  gameDetails?.status === 'completed'
+) return;
+
     setIsProcessing(true);
     setError(null);
 
@@ -545,7 +551,11 @@ export default function QuickScoreInput() {
   };
 
   const handleSaveOpponentHalf = async () => {
-    if (!currentGameId || isProcessing) return;
+    if (
+      !currentGameId ||
+      isProcessing ||
+      gameDetails?.status === 'completed'
+    ) return;
     setIsProcessing(true);
     setError(null);
 
@@ -592,6 +602,40 @@ export default function QuickScoreInput() {
       ]);
     } catch (e) {
       setError('相手攻撃の記録に失敗しました');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+
+  const handleFinishGame = async () => {
+    if (!currentGameId) return;
+
+    if (!confirm('試合を終了しますか？')) return;
+
+    setIsProcessing(true);
+
+    try {
+      const response = await fetch(`/api/games/${currentGameId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          opponent: editOpponent,
+          location: editLocation,
+          memo: editMemo,
+          status: 'completed',
+          batting_side: gameDetails?.batting_side || 'TOP',
+        }),
+      });
+
+      if (response.ok) {
+        await fetchGameDetails(currentGameId);
+        await fetchGamesList();
+      }
+    } catch (e) {
+      setError('試合終了に失敗しました');
     } finally {
       setIsProcessing(false);
     }
@@ -853,7 +897,7 @@ export default function QuickScoreInput() {
                   onResultTap={handleResultTap}
                   onUndo={handleUndo}
                   lastInsertedId={lastInsertedId}
-                  isProcessing={isProcessing}
+                  isProcessing={isProcessing || gameDetails?.status === 'completed'}
                   resultOptions={RESULT_OPTIONS}
                 />
                 <RecentPlateAppearances
@@ -890,7 +934,7 @@ export default function QuickScoreInput() {
                         <button
                           type="button"
                           onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Math.max(0, Number(value) - 1))}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="w-9 h-9 rounded-full bg-gray-800 text-white font-black disabled:opacity-50"
                         >
                           -
@@ -899,7 +943,7 @@ export default function QuickScoreInput() {
                         <button
                           type="button"
                           onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Number(value) + 1)}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="w-9 h-9 rounded-full bg-gray-800 text-white font-black disabled:opacity-50"
                         >
                           +
@@ -914,7 +958,7 @@ export default function QuickScoreInput() {
                   <textarea
                     value={opponentNoteInput}
                     onChange={(e) => setOpponentNoteInput(e.target.value)}
-                    disabled={isProcessing}
+                    disabled={isProcessing || gameDetails?.status === 'completed'}
                     rows={3}
                     className="w-full bg-gray-950/60 border border-gray-800 rounded-2xl p-3 text-sm text-white focus:outline-none focus:border-red-500 disabled:opacity-50"
                     placeholder="例：四球から失点、エラー絡みなど"
@@ -924,7 +968,7 @@ export default function QuickScoreInput() {
                 <button
                   type="button"
                   onClick={handleSaveOpponentHalf}
-                  disabled={isProcessing}
+                  disabled={isProcessing || gameDetails?.status === 'completed'}
                   className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-2xl active:scale-[0.98] disabled:opacity-50"
                 >
                   相手攻撃を保存して次へ
@@ -1007,7 +1051,7 @@ export default function QuickScoreInput() {
                       setIsCreatingGame(true);
                       setNewGameStep(1);
                     }}
-                    disabled={isProcessing}
+                    disabled={isProcessing || gameDetails?.status === 'completed'}
                     className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-4 py-3 rounded-xl active:scale-[0.98] disabled:opacity-50"
                   >
                     新規作成
@@ -1049,7 +1093,7 @@ export default function QuickScoreInput() {
                             setIsCreatingGame(false);
                             setNewGameStep(1);
                           }}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
                         >
                           キャンセル
@@ -1057,7 +1101,7 @@ export default function QuickScoreInput() {
                         <button
                           type="button"
                           onClick={() => setNewGameStep(2)}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
                         >
                           打順選択へ
@@ -1086,7 +1130,7 @@ export default function QuickScoreInput() {
                               <select
                                 value={newGameLineup[order] || ''}
                                 onChange={(e) => setNewGameLineup((prev) => ({ ...prev, [order]: e.target.value }))}
-                                disabled={isProcessing}
+                                disabled={isProcessing || gameDetails?.status === 'completed'}
                                 className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
                               >
                                 <option value="">スキップ</option>
@@ -1112,7 +1156,7 @@ export default function QuickScoreInput() {
                         <button
                           type="button"
                           onClick={() => setNewGameStep(1)}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
                         >
                           戻る
@@ -1124,7 +1168,7 @@ export default function QuickScoreInput() {
                             if (!validateNewGameLineup()) return;
                             setNewGameStep(3);
                           }}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
                         >
                           試合情報へ
@@ -1182,7 +1226,7 @@ export default function QuickScoreInput() {
                         <button
                           type="button"
                           onClick={() => setNewGameStep(2)}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
                         >
                           戻る
@@ -1190,7 +1234,7 @@ export default function QuickScoreInput() {
                         <button
                           type="button"
                           onClick={handleNewGame}
-                          disabled={isProcessing}
+                          disabled={isProcessing || gameDetails?.status === 'completed'}
                           className="flex-1 bg-green-600 hover:bg-green-500 text-white text-xs font-black py-3 rounded-xl active:scale-[0.98] disabled:opacity-50"
                         >
                           この内容で試合開始
@@ -1213,6 +1257,19 @@ export default function QuickScoreInput() {
                 isProcessing={isProcessing}
               />
             )}
+
+            <button
+              onClick={handleFinishGame}
+              disabled={
+                isProcessing ||
+                gameDetails?.status === 'completed'
+              }
+              className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-4 rounded-xl disabled:opacity-50 mb-4"
+            >
+              {gameDetails?.status === 'completed'
+                ? '試合終了済み'
+                : '試合終了'}
+            </button>
 
             <GameList
               games={gamesList}
