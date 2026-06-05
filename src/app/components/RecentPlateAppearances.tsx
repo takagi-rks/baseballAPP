@@ -11,15 +11,18 @@ interface RecentPlateAppearancesProps {
 
 function getResultLabel(item: any): string {
   const map: Record<string, string> = {
-    SINGLE: '1B',
-    DOUBLE: '2B',
-    TRIPLE: '3B',
-    HOME_RUN: 'HR',
-    WALK: 'BB',
-    HIT_BY_PITCH: 'HBP',
-    STRIKEOUT: 'K',
-    GROUND_OUT: 'GO',
-    FLY_OUT: 'FO',
+    SINGLE: '単打',
+    DOUBLE: '二塁打',
+    TRIPLE: '三塁打',
+    HOME_RUN: '本塁打',
+
+    WALK: '四球',
+    HIT_BY_PITCH: '死球',
+
+    STRIKEOUT: '三振',
+    GROUND_OUT: 'ゴロ',
+    FLY_OUT: 'フライ',
+
     SAC_BUNT: '犠打',
     SAC_FLY: '犠飛',
   };
