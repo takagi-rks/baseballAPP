@@ -5,6 +5,7 @@ interface ScoreInputPanelProps {
   inning: number;
   inningHalf: 'TOP' | 'BOTTOM';
   outs: number;
+  setOuts: (value: number) => void;
   bases: { [key: number]: boolean };
   setBases: (bases: { [key: number]: boolean }) => void;
   battingOrder: number;
@@ -23,7 +24,7 @@ interface ScoreInputPanelProps {
 }
 
 export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
-  inning, inningHalf, outs, bases, setBases,
+  inning, inningHalf, outs, setOuts, bases, setBases,
   battingOrder, selectedPlayer, onPlayerChange, players,
   rbi, setRbi, runs, setRuns,
   onResultTap, onUndo, lastInsertedId,
@@ -39,41 +40,59 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* Status Card */}
-      <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-3 mb-4 flex justify-between items-center shadow-lg">
-        <div className="flex flex-col">
-          <span className="text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-1">Status</span>
-          <div className="flex items-center space-x-4">
-            <div className="text-lg font-black text-white italic">
-              {inning} <span className="text-xs not-italic mr-1">{inningHalf === 'TOP' ? '表' : '裏'}</span>
+      {/* Compact Status Card */}
+      <div className="bg-blue-900/30 border border-blue-500/30 rounded-xl p-3 mb-3 shadow-lg">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-[10px] text-blue-300 font-black uppercase tracking-wider mb-1">
+              現在打者
             </div>
-            <div className="flex space-x-1 items-center">
-              <span className="text-[10px] text-gray-500 font-bold mr-1">O</span>
-              {[1, 2].map(i => (
-                <div key={i} className={`w-3 h-3 rounded-full border border-black/20 ${outs >= i ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'bg-gray-800'}`}></div>
-              ))}
+            <div className="truncate text-sm font-black text-white">
+              {currentPlayer ? `${currentPlayer.batting_order}番 #${currentPlayer.uniform_number} ${currentPlayer.name}` : "選手なし"}
+            </div>
+            <div className="truncate text-[10px] text-gray-400 mt-0.5">
+              NEXT {nextPlayer ? `${nextPlayer.batting_order}番 #${nextPlayer.uniform_number} ${nextPlayer.name}` : "なし"}
             </div>
           </div>
-        </div>
 
-        {/* Diamond */}
-        <div className="relative w-12 h-12 flex items-center justify-center translate-x-[-10px]">
-          <div className="absolute w-8 h-8 border border-gray-700 rotate-45"></div>
-          <div className={`absolute top-1/2 right-0 w-3 h-3 border border-gray-600 -translate-y-1/2 translate-x-1/2 ${bases[1] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
-          <div className={`absolute top-0 left-1/2 w-3 h-3 border border-gray-600 -translate-x-1/2 -translate-y-1/2 ${bases[2] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
-          <div className={`absolute top-1/2 left-0 w-3 h-3 border border-gray-600 -translate-y-1/2 -translate-x-1/2 ${bases[3] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
-        </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="text-right">
+              <div className="text-[10px] text-gray-500 font-black">
+                {inning}回{inningHalf === 'TOP' ? '表' : '裏'}
+              </div>
+              <div className="flex items-center gap-1 mt-1 justify-end">
+                {[1, 2].map(i => (
+                  <div key={i} className={`w-2.5 h-2.5 rounded-full border border-black/20 ${outs >= i ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'bg-gray-800'}`}></div>
+                ))}
+              </div>
+            </div>
 
-        <div className="text-right">
-          <div className="text-[10px] text-blue-300 font-black uppercase tracking-wider mb-1">現在打者</div>
-          <div>
-            <span className="text-2xl font-black text-blue-400 italic mr-2">{currentPlayer?.batting_order ?? battingOrder}<span className="text-xs not-italic font-normal ml-0.5">番</span></span>
-            <span className="text-lg font-bold">
-              {currentPlayer ? `#${currentPlayer.uniform_number} ${currentPlayer.name}` : "選手なし"}
-            </span>
-          </div>
-          <div className="text-[10px] text-gray-400 mt-1">
-            次: {nextPlayer ? `${nextPlayer.batting_order}番 #${nextPlayer.uniform_number} ${nextPlayer.name}` : "なし"}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setOuts(Math.max(0, outs - 1))}
+                disabled={isProcessing || outs <= 0}
+                className="w-7 h-7 rounded-full bg-gray-800 text-white font-black disabled:opacity-30 active:scale-95"
+              >
+                -
+              </button>
+              <span className="w-4 text-center text-sm font-black text-white">{outs}</span>
+              <button
+                type="button"
+                onClick={() => setOuts(Math.min(2, outs + 1))}
+                disabled={isProcessing || outs >= 2}
+                className="w-7 h-7 rounded-full bg-gray-800 text-white font-black disabled:opacity-30 active:scale-95"
+              >
+                +
+              </button>
+            </div>
+
+            <div className="relative w-9 h-9 flex items-center justify-center">
+              <div className="absolute w-6 h-6 border border-gray-700 rotate-45"></div>
+              <div className={`absolute top-1/2 right-0 w-2.5 h-2.5 border border-gray-600 -translate-y-1/2 translate-x-1/2 ${bases[1] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
+              <div className={`absolute top-0 left-1/2 w-2.5 h-2.5 border border-gray-600 -translate-x-1/2 -translate-y-1/2 ${bases[2] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
+              <div className={`absolute top-1/2 left-0 w-2.5 h-2.5 border border-gray-600 -translate-y-1/2 -translate-x-1/2 ${bases[3] ? 'bg-amber-400' : 'bg-gray-800'}`}></div>
+            </div>
           </div>
         </div>
       </div>

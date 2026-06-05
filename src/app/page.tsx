@@ -949,6 +949,7 @@ if (
                   inning={inning}
                   inningHalf={inningHalf}
                   outs={outs}
+                  setOuts={setOuts}
                   bases={bases}
                   setBases={setBases}
                   battingOrder={battingOrder}
