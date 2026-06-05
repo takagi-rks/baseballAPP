@@ -58,6 +58,14 @@ export async function initDb() {
       slugging_value INT DEFAULT 0,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );`,
+    `CREATE TABLE IF NOT EXISTS player_position_histories (
+      id SERIAL PRIMARY KEY,
+      game_id INT REFERENCES games(id) ON DELETE CASCADE,
+      player_id INT REFERENCES players(id) ON DELETE CASCADE,
+      position VARCHAR(50),
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(game_id, player_id)
+    );`,
     `CREATE TABLE IF NOT EXISTS inning_scores (
       id SERIAL PRIMARY KEY,
       game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,

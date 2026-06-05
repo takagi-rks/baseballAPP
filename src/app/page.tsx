@@ -26,6 +26,7 @@ import { GameStatsTable } from './components/GameStatsTable';
 import { CareerStatsTable } from './components/CareerStatsTable';
 import { BattingAverageTop5 } from './components/BattingAverageTop5';
 import { MonthlyStats } from './components/MonthlyStats';
+import { PositionHistory } from './components/PositionHistory';
 
 export default function QuickScoreInput() {
   // --- States ---
@@ -116,7 +117,7 @@ export default function QuickScoreInput() {
       setPlayers(players);
       if (players.length > 0 && !selectedPlayer) {
         setSelectedPlayer(String(players[0].id));
-        setBattingOrder(players[0].batting_order);
+        setBattingOrder(players[0].batting_orderrr);
       }
     } catch (e) {
       setError('選手一覧の取得に失敗しました');
@@ -345,7 +346,7 @@ if (
         if (currentIndex !== -1 && activePlayers.length > 0) {
           const nextIndex = (currentIndex + 1) % activePlayers.length;
           const nextPlayer = activePlayers[nextIndex];
-          setBattingOrder(nextPlayer.batting_order);
+          setBattingOrder(nextPlayer.batting_orderrr);
           setSelectedPlayer(String(nextPlayer.id));
         }
 
@@ -555,11 +556,11 @@ if (
   const saveNewGameLineup = async () => {
     const entries = Object.entries(newGameLineup)
       .map(([order, playerId]) => ({
-        batting_order: Number(order),
+        batting_orderrr: Number(order),
         player_id: Number(playerId),
       }))
       .filter((entry) => entry.player_id > 0)
-      .sort((a, b) => a.batting_order - b.batting_order);
+      .sort((a, b) => a.batting_orderrr - b.batting_orderrr);
 
     const usedPlayerIds = new Set<number>();
 
@@ -577,7 +578,7 @@ if (
           name: player.name,
           uniform_number: player.uniform_number,
           position: player.position,
-          batting_order: entry.batting_order,
+          batting_orderrr: entry.batting_orderrr,
           is_active: true,
         }),
       });
@@ -755,22 +756,22 @@ if (
 
       const selectedLineup = Object.entries(newGameLineup)
         .map(([order, playerId]) => ({
-          batting_order: Number(order),
+          batting_orderrr: Number(order),
           player_id: Number(playerId),
         }))
         .filter((entry) => entry.player_id > 0)
-        .sort((a, b) => a.batting_order - b.batting_order)
+        .sort((a, b) => a.batting_orderrr - b.batting_orderrr)
         .map((entry) => {
           const player = latestPlayers.find((p: Player) => p.id === entry.player_id);
-          return player ? { ...player, batting_order: entry.batting_order } : null;
+          return player ? { ...player, batting_orderrr: entry.batting_orderrr } : null;
         })
         .filter(Boolean) as Player[];
 
       const orderedPlayers = selectedLineup.length > 0
         ? selectedLineup
         : [...latestPlayers]
-            .filter((p) => p && p.batting_order)
-            .sort((a, b) => (a.batting_order || 999) - (b.batting_order || 999));
+            .filter((p) => p && p.batting_orderrr)
+            .sort((a, b) => (a.batting_orderrr || 999) - (b.batting_orderrr || 999));
 
       setGamePlayers(orderedPlayers);
 
@@ -780,7 +781,7 @@ if (
         setCurrentGameId(gid);
 
         if (orderedPlayers.length > 0) {
-          setBattingOrder(orderedPlayers[0].batting_order || 1);
+          setBattingOrder(orderedPlayers[0].batting_orderrr || 1);
           setSelectedPlayer(String(orderedPlayers[0].id));
         } else {
           setBattingOrder(1);
@@ -833,7 +834,7 @@ if (
           name: newPlayerName,
           uniform_number: newPlayerNumber,
           position: newPlayerPos,
-          batting_order: newPlayerOrder
+          batting_orderrr: newPlayerOrder
         }),
       });
       if (response.ok) {
@@ -858,7 +859,7 @@ if (
           name: editPlayerName,
           uniform_number: editPlayerNumber,
           position: editPlayerPos,
-          batting_order: editPlayerOrder
+          batting_orderrr: editPlayerOrder
         }),
       });
       if (resp.ok) {
@@ -884,7 +885,7 @@ if (
     setEditPlayerName(player.name);
     setEditPlayerNumber(String(player.uniform_number));
     setEditPlayerPos(player.position || "");
-    setEditPlayerOrder(String(player.batting_order));
+    setEditPlayerOrder(String(player.batting_orderrr));
   };
 
   const handleExportCSV = () => {
@@ -984,7 +985,7 @@ if (
                     setSelectedPlayer(pid);
                     const activePlayers = gamePlayers.length > 0 ? gamePlayers : players;
                     const p = activePlayers.find(x => x.id === parseInt(pid));
-                    if (p) setBattingOrder(p.batting_order);
+                    if (p) setBattingOrder(p.batting_orderrr);
                   }}
                   players={gamePlayers.length > 0 ? gamePlayers : players}
                   rbi={rbi} setRbi={setRbi}
@@ -1091,6 +1092,8 @@ if (
             <BattingAverageTop5 />
 
             <MonthlyStats />
+
+            <PositionHistory />
 
             <CareerStatsTable />
 
