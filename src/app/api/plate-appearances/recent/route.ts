@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const query = `
       SELECT * FROM plate_appearances 
       WHERE game_id = $1 
-      ORDER BY created_at DESC 
+      ORDER BY inning ASC, created_at ASC 
       LIMIT 10;
     `;
     const result = await pool.query(query, [gameId]);
