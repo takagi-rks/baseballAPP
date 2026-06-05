@@ -933,6 +933,15 @@ if (
               battingSide={gameDetails?.batting_side || 'TOP'}
             />
 
+            <button
+              type="button"
+              onClick={handleFinishGame}
+              disabled={isProcessing || gameDetails?.status === 'completed'}
+              className="w-full bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-2xl active:scale-[0.98] disabled:opacity-50"
+            >
+              {gameDetails?.status === 'completed' ? '試合終了済み' : '試合終了'}
+            </button>
+
             {isOurBatting ? (
               <>
                 <ScoreInputPanel
@@ -940,6 +949,7 @@ if (
                   inningHalf={inningHalf}
                   outs={outs}
                   bases={bases}
+                  setBases={setBases}
                   battingOrder={battingOrder}
                   selectedPlayer={selectedPlayer}
                   onPlayerChange={(pid) => {

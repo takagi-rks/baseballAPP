@@ -6,6 +6,7 @@ interface ScoreInputPanelProps {
   inningHalf: 'TOP' | 'BOTTOM';
   outs: number;
   bases: { [key: number]: boolean };
+  setBases: (bases: { [key: number]: boolean }) => void;
   battingOrder: number;
   selectedPlayer: string;
   onPlayerChange: (pid: string) => void;
@@ -22,7 +23,7 @@ interface ScoreInputPanelProps {
 }
 
 export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
-  inning, inningHalf, outs, bases,
+  inning, inningHalf, outs, bases, setBases,
   battingOrder, selectedPlayer, onPlayerChange, players,
   rbi, setRbi, runs, setRuns,
   onResultTap, onUndo, lastInsertedId,
@@ -75,6 +76,44 @@ export const ScoreInputPanel: React.FC<ScoreInputPanelProps> = ({
             次: {nextPlayer ? `${nextPlayer.batting_order}番 #${nextPlayer.uniform_number} ${nextPlayer.name}` : "なし"}
           </div>
         </div>
+      </div>
+
+      {/* Manual Runner Control */}
+      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-4 shadow-lg">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-xs text-gray-400 font-black uppercase tracking-widest">ランナー手動調整</h3>
+          <span className="text-[10px] text-gray-600">塁をタップでON/OFF</span>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2">
+          {[1, 2, 3].map((base) => {
+            const label = base === 1 ? '一塁' : base === 2 ? '二塁' : '三塁';
+            const active = Boolean(bases[base]);
+
+            return (
+              <button
+                key={base}
+                type="button"
+                onClick={() => setBases({ ...bases, [base]: !active })}
+                className={`py-3 rounded-xl border text-xs font-black transition-all active:scale-[0.98] ${
+                  active
+                    ? 'bg-amber-400/20 text-amber-300 border-amber-400/40'
+                    : 'bg-gray-950/60 text-gray-500 border-gray-800'
+                }`}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setBases({ 1: false, 2: false, 3: false })}
+          className="w-full mt-3 py-2 rounded-xl bg-gray-800 text-gray-400 text-[11px] font-black border border-gray-700 active:scale-[0.98]"
+        >
+          ランナーをクリア
+        </button>
       </div>
 
       {/* Batter Selection */}
