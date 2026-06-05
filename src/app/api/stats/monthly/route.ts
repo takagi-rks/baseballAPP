@@ -11,6 +11,9 @@ export async function GET() {
     const result = await pool.query(`
       SELECT
         TO_CHAR(g.game_date, 'YYYY-MM') AS month,
+        pa.player_id,
+        p.name,
+        p.uniform_number,
         COUNT(DISTINCT g.id)::int AS games,
         COUNT(*)::int AS plate_appearances,
         SUM(CASE WHEN pa.is_at_bat THEN 1 ELSE 0 END)::int AS at_bats,
@@ -20,29 +23,28 @@ export async function GET() {
         COALESCE(SUM(pa.slugging_value), 0)::int AS total_bases
       FROM plate_appearances pa
       JOIN games g ON g.id = pa.game_id
-      GROUP BY TO_CHAR(g.game_date, 'YYYY-MM')
-      ORDER BY month DESC;
+      JOIN players p ON p.id = pa.player_id
+      GROUP BY TO_CHAR(g.game_date, 'YYYY-MM'), pa.player_id, p.name, p.uniform_number
+      ORDER BY month DESC, p.uniform_number ASC;
     `);
 
     const monthly = result.rows.map((row) => {
       const atBats = Number(row.at_bats || 0);
       const hits = Number(row.hits || 0);
       const totalBases = Number(row.total_bases || 0);
-      const avg = atBats > 0 ? hits / atBats : 0;
-      const slg = atBats > 0 ? totalBases / atBats : 0;
 
       return {
         ...row,
-        avg: fmtRate(avg),
-        slg: fmtRate(slg),
+        avg: fmtRate(atBats > 0 ? hits / atBats : 0),
+        slg: fmtRate(atBats > 0 ? totalBases / atBats : 0),
       };
     });
 
     return NextResponse.json({ success: true, monthly });
   } catch (error) {
-    console.error('Monthly Stats Error:', error);
+    console.error('Monthly Player Stats Error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch monthly stats' },
+      { success: false, error: 'Failed to fetch monthly player stats' },
       { status: 500 }
     );
   }

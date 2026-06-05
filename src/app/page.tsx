@@ -18,15 +18,12 @@ import type {
 import { Scoreboard } from './components/Scoreboard';
 import { GameInfoForm } from './components/GameInfoForm';
 import { ScoreInputPanel } from './components/ScoreInputPanel';
-import { PlayerStatsRanking } from './components/PlayerStatsRanking';
 import { AiComments } from './components/AiComments';
 import { RecentPlateAppearances } from './components/RecentPlateAppearances';
 import { GameList } from './components/GameList';
 import { PlayerManager } from './components/PlayerManager';
-import { GameTimeline } from './components/GameTimeline';
 import { GameStatsTable } from './components/GameStatsTable';
 import { CareerStatsTable } from './components/CareerStatsTable';
-import { GameSummaryHistory } from './components/GameSummaryHistory';
 import { BattingAverageTop5 } from './components/BattingAverageTop5';
 import { MonthlyStats } from './components/MonthlyStats';
 
@@ -1086,14 +1083,11 @@ if (
               players={gamePlayers.length > 0 ? gamePlayers : players}
               initialGameId={currentGameId}
             />
-            <GameTimeline timeline={timelineData} />
           </div>
         )}
 
         {activeTab === 'stats' && (
           <div className="space-y-3">
-            <GameSummaryHistory />
-
             <BattingAverageTop5 />
 
             <MonthlyStats />
@@ -1111,13 +1105,6 @@ if (
                 <span>📥 個人成績CSVダウンロード</span>
               </button>
             </div>
-            
-            <PlayerStatsRanking 
-              playerStats={playerStats}
-              players={players}
-              onExportCSV={handleExportCSV}
-              isProcessing={isProcessing}
-            />
             <AiComments comments={aiComments} />
           </div>
         )}
