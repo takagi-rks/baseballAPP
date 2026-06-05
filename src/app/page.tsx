@@ -1076,7 +1076,7 @@ if (
                 />
               </>
             ) : (
-              <div className="bg-gray-900/70 border border-red-500/20 rounded-3xl p-3 shadow-2xl space-y-5">
+              <div className="bg-gray-900/70 border border-red-500/20 rounded-3xl p-3 shadow-2xl space-y-2">
                 <div>
                   <div className="text-[10px] text-red-400 font-black uppercase tracking-[0.25em] mb-2">
                     相手攻撃入力
@@ -1089,7 +1089,7 @@ if (
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   {[
                     ['失点', opponentRunsInput, setOpponentRunsInput],
                     ['被安打', opponentHitsInput, setOpponentHitsInput],
@@ -1099,7 +1099,7 @@ if (
                   ].map(([label, value, setter]) => (
                     <div key={String(label)} className="bg-gray-950/60 border border-gray-800 rounded-2xl p-3 text-center">
                       <div className="text-[10px] text-gray-500 font-black mb-2">{String(label)}</div>
-                      <div className="flex items-center justify-center gap-3">
+                      <div className="flex items-center justify-center gap-2">
                         <button
                           type="button"
                           onClick={() => (setter as React.Dispatch<React.SetStateAction<number>>)(Math.max(0, Number(value) - 1))}
@@ -1207,11 +1207,11 @@ if (
         {activeTab === 'gameInfo' && (
           <div className="space-y-3">
             <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-3 shadow-lg">
-              <div className="flex items-center justify-between gap-3 mb-5">
+              <div className="flex items-center justify-between gap-2 mb-2">
                 <div>
                   <h2 className="text-sm font-black text-gray-100">新規試合作成</h2>
                   <p className="text-[11px] text-gray-500 mt-1">
-                    新規作成 → 打順選択 → 試合情報入力 の順で作成します。
+                    
                   </p>
                 </div>
 
@@ -1223,7 +1223,7 @@ if (
                       setNewGameStep(1);
                     }}
                     disabled={isProcessing || gameDetails?.status === 'completed'}
-                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-4 py-3 rounded-xl active:scale-[0.98] disabled:opacity-50"
+                    className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black px-3 py-1.5 rounded-lg active:scale-[0.98] disabled:opacity-50"
                   >
                     新規作成
                   </button>
@@ -1231,7 +1231,7 @@ if (
               </div>
 
               {isCreatingGame && (
-                <div className="space-y-5">
+                <div className="space-y-2">
                   <div className="grid grid-cols-4 gap-2 text-center text-[10px] font-black">
                     {[1, 2, 3].map((step) => (
                       <div
@@ -1242,22 +1242,22 @@ if (
                             : 'bg-gray-950/40 border-gray-800 text-gray-600'
                         }`}
                       >
-                        {step === 1 ? '1 新規作成' : step === 2 ? '2 打順選択' : '3 試合情報'}
+                        {step === 1 ? '①作成' : step === 2 ? '②打順' : '③情報'}
                       </div>
                     ))}
                   </div>
 
                   {newGameStep === 1 && (
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-2">
-                        <h3 className="text-sm font-black text-white mb-2">新しい試合を開始します</h3>
+                        <h3 className="text-sm font-black text-white mb-2">新しい試合</h3>
                         <p className="text-xs text-gray-500 leading-relaxed">
-                          次のステップで打順を選び、その後に対戦相手・球場などを入力します。
-                          既存の試合データは削除されません。
+                          
+                          
                         </p>
                       </div>
 
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => {
@@ -1265,7 +1265,7 @@ if (
                             setNewGameStep(1);
                           }}
                           disabled={isProcessing || gameDetails?.status === 'completed'}
-                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
+                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-lg disabled:opacity-50"
                         >
                           キャンセル
                         </button>
@@ -1273,7 +1273,7 @@ if (
                           type="button"
                           onClick={() => setNewGameStep(2)}
                           disabled={isProcessing || gameDetails?.status === 'completed'}
-                          className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
+                          className="flex-1 bg-blue-600 text-white text-xs font-black py-2 rounded-lg disabled:opacity-50"
                         >
                           打順選択へ
                         </button>
@@ -1282,7 +1282,7 @@ if (
                   )}
 
                   {newGameStep === 2 && (
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <div>
                         <h3 className="text-sm font-black text-gray-100">打順選択</h3>
                         <p className="text-[11px] text-gray-500 mt-1">
@@ -1294,15 +1294,15 @@ if (
                         {Array.from({ length: 11 }, (_, index) => {
                           const order = index + 1;
                           return (
-                            <div key={order} className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-sm font-black text-blue-400">
+                            <div key={order} className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-lg bg-gray-800 flex items-center justify-center text-xs font-black text-blue-400">
                                 {order}
                               </div>
                               <select
                                 value={newGameLineup[order] || ''}
                                 onChange={(e) => setNewGameLineup((prev) => ({ ...prev, [order]: e.target.value }))}
                                 disabled={isProcessing || gameDetails?.status === 'completed'}
-                                className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-3 py-3 text-sm font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+                                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-2 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
                               >
                                 <option value="">スキップ</option>
                                 {players.map((player) => {
@@ -1323,12 +1323,12 @@ if (
                         })}
                       </div>
 
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => setNewGameStep(1)}
                           disabled={isProcessing || gameDetails?.status === 'completed'}
-                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
+                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-lg disabled:opacity-50"
                         >
                           戻る
                         </button>
@@ -1340,7 +1340,7 @@ if (
                             setNewGameStep(3);
                           }}
                           disabled={isProcessing || gameDetails?.status === 'completed'}
-                          className="flex-1 bg-blue-600 text-white text-xs font-black py-3 rounded-xl disabled:opacity-50"
+                          className="flex-1 bg-blue-600 text-white text-xs font-black py-2 rounded-lg disabled:opacity-50"
                         >
                           試合情報へ
                         </button>
@@ -1349,7 +1349,7 @@ if (
                   )}
 
                   {newGameStep === 3 && (
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <div>
                         <h3 className="text-sm font-black text-gray-100">試合情報入力</h3>
                         <p className="text-[11px] text-gray-500 mt-1">対戦相手・球場などを入力して試合を開始します。</p>
@@ -1357,11 +1357,11 @@ if (
 
                       <div className="bg-gray-950/50 border border-gray-800 rounded-2xl p-2">
                         <h4 className="text-xs font-black text-gray-300 mb-3">先攻/後攻</h4>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-2">
                           <button
                             type="button"
                             onClick={() => setNewGameBattingSide('TOP')}
-                            className={`py-3 rounded-xl text-xs font-black border ${
+                            className={`py-2 rounded-lg text-xs font-black border ${
                               newGameBattingSide === 'TOP'
                                 ? 'bg-blue-500/20 border-blue-500 text-blue-300'
                                 : 'bg-gray-900 border-gray-800 text-gray-500'
@@ -1372,7 +1372,7 @@ if (
                           <button
                             type="button"
                             onClick={() => setNewGameBattingSide('BOTTOM')}
-                            className={`py-3 rounded-xl text-xs font-black border ${
+                            className={`py-2 rounded-lg text-xs font-black border ${
                               newGameBattingSide === 'BOTTOM'
                                 ? 'bg-blue-500/20 border-blue-500 text-blue-300'
                                 : 'bg-gray-900 border-gray-800 text-gray-500'
@@ -1393,12 +1393,12 @@ if (
                         isProcessing={isProcessing}
                       />
 
-                      <div className="flex gap-3">
+                      <div className="flex gap-2">
                         <button
                           type="button"
                           onClick={() => setNewGameStep(2)}
                           disabled={isProcessing || gameDetails?.status === 'completed'}
-                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-3 rounded-xl disabled:opacity-50"
+                          className="flex-1 bg-gray-800 text-gray-300 text-xs font-bold py-2 rounded-lg disabled:opacity-50"
                         >
                           戻る
                         </button>
@@ -1406,7 +1406,7 @@ if (
                           type="button"
                           onClick={handleNewGame}
                           disabled={isProcessing || gameDetails?.status === 'completed'}
-                          className="flex-1 bg-green-600 hover:bg-green-500 text-white text-xs font-black py-3 rounded-xl active:scale-[0.98] disabled:opacity-50"
+                          className="flex-1 bg-green-600 hover:bg-green-500 text-white text-xs font-black py-2 rounded-lg active:scale-[0.98] disabled:opacity-50"
                         >
                           この内容で試合開始
                         </button>
