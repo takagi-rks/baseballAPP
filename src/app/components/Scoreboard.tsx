@@ -67,7 +67,7 @@ export const Scoreboard: React.FC<ScoreboardProps> = ({
                 key={inning}
                 className="text-center py-3 border-r border-gray-800 text-gray-100 italic"
               >
-                {run > 0 ? run : <span className="text-gray-700 text-xs font-normal">0</span>}
+                {run === null ? '' : run > 0 ? run : <span className="text-gray-700 text-xs font-normal">0</span>}
               </div>
             );
           })}
