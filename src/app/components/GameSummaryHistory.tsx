@@ -76,7 +76,7 @@ export const GameSummaryHistory: React.FC = () => {
                   </div>
                   <div className="text-[9px] text-gray-500 truncate">
                     {game.location || '球場未設定'}
-                    {game.status === 'completed' ? ' / FIN' : ' / LIVE'}
+                    
                   </div>
                 </div>
 

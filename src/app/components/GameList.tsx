@@ -64,7 +64,7 @@ export const GameList: React.FC<GameListProps> = ({
               <span className={`px-2 py-0.5 rounded text-[8px] uppercase tracking-widest border ${
                 game.status === 'completed' ? 'border-gray-700 text-gray-500' : 'border-green-500/30 text-green-400'
               }`}>
-                {game.status === 'completed' ? 'FIN' : 'Live'}
+                
               </span>
             </div>
           </div>

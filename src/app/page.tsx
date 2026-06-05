@@ -959,7 +959,7 @@ if (
                 ? 'border-gray-800 text-gray-600 bg-gray-900/50' 
                 : 'border-green-500/30 text-green-400 bg-green-500/10 animate-pulse'
             }`}>
-              {gameDetails.status === 'completed' ? 'FIN' : 'Live'}
+              
             </span>
           </div>
         </div>
@@ -980,7 +980,7 @@ if (
                 ? 'bg-gray-800 text-gray-400 border-gray-700'
                 : 'bg-green-500/10 text-green-400 border-green-500/30'
             }`}>
-              {gameDetails.status === 'completed' ? 'FIN' : 'LIVE'}
+              
             </div>
           </div>
 
