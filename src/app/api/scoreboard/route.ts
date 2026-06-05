@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 
-const INNINGS = [1, 2, 3, 4, 5, 6, 7];
-
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -32,9 +30,9 @@ export async function GET(request: NextRequest) {
       if (row.team_side === 'them') themMap.set(row.inning, row.runs);
     }
 
-    // 変更理由: 1〜7回を必ず補完して返す
-    const us = INNINGS.map(i => ({ inning: i, runs: usMap.get(i) ?? 0 }));
-    const them = INNINGS.map(i => ({ inning: i, runs: themMap.get(i) ?? 0 }));
+    // 未入力イニングは返さない。入力済み0点だけ runs: 0 として返す
+    const us = Array.from(usMap.entries()).map(([inning, runs]) => ({ inning, runs }));
+    const them = Array.from(themMap.entries()).map(([inning, runs]) => ({ inning, runs }));
 
     return NextResponse.json({ success: true, scores: { us, them } });
 
