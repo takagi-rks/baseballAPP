@@ -87,7 +87,7 @@ export const GameSummaryCard: React.FC<GameSummaryCardProps> = ({
         .map((row: any) => {
           const player = players.find((p) => Number(p.id) === Number(row.player_id));
           const score =
-            Number(row.hits || 0) * 2 +
+            Number(row.hits || row.h || 0) * 2 +
             Number(row.home_runs || row.hr || 0) * 5 +
             Number(row.rbi || 0) * 2 +
             Number(row.walks || row.bb || 0) +
@@ -167,7 +167,7 @@ export const GameSummaryCard: React.FC<GameSummaryCardProps> = ({
             #{mvp.player.uniform_number} {mvp.player.name}
           </div>
           <div className="text-[11px] text-gray-400 mt-1">
-            安打 {mvp.row.hits || 0} / 本塁打 {mvp.row.home_runs || mvp.row.hr || 0} / 打点 {mvp.row.rbi || 0}
+            安打 {mvp.row.hits || mvp.row.h || 0} / 本塁打 {mvp.row.home_runs || mvp.row.hr || 0} / 打点 {mvp.row.rbi || 0}
           </div>
         </div>
       )}
