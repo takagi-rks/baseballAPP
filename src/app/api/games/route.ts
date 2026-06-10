@@ -18,9 +18,15 @@ export async function POST(request: NextRequest) {
       VALUES ($1, $2, $3, $4)
       RETURNING id;
     `;
-    const result = await pool.query(query, [opponent, tournamentName, status, battingSide]);
-    return NextResponse.json({ success: true, id: result.rows[0].id });
 
+    const result = await pool.query(query, [
+      opponent,
+      tournamentName,
+      status,
+      battingSide,
+    ]);
+
+    return NextResponse.json({ success: true, id: result.rows[0].id });
   } catch (error) {
     console.error('Create Game Error:', error);
     return NextResponse.json(
@@ -33,11 +39,29 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     await dbReady;
-    const result = await pool.query(
-      'SELECT * FROM games ORDER BY created_at DESC;'
-    );
-    return NextResponse.json({ success: true, games: result.rows });
 
+    const result = await pool.query(`
+      SELECT
+        g.*,
+        COALESCE(us.total_runs, 0)::int AS score_us,
+        COALESCE(them.total_runs, 0)::int AS score_them
+      FROM games g
+      LEFT JOIN (
+        SELECT game_id, SUM(runs)::int AS total_runs
+        FROM inning_scores
+        WHERE team_side = 'us'
+        GROUP BY game_id
+      ) us ON us.game_id = g.id
+      LEFT JOIN (
+        SELECT game_id, SUM(runs)::int AS total_runs
+        FROM inning_scores
+        WHERE team_side = 'them'
+        GROUP BY game_id
+      ) them ON them.game_id = g.id
+      ORDER BY g.game_date DESC, g.created_at DESC;
+    `);
+
+    return NextResponse.json({ success: true, games: result.rows });
   } catch (error) {
     console.error('Fetch Games Error:', error);
     return NextResponse.json(
